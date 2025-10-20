@@ -10,48 +10,68 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-/* ===== TAMBAHAN PRINT STYLES ===== */
+/* ===== PRINT STYLES UNTUK STRUK ===== */
 @media print {
-  /* Sembunyikan semua elemen kecuali receipt */
-  body * {
-    visibility: hidden;
-  }
-  #receiptContent, #receiptContent * {
-    visibility: visible;
-  }
-  #receiptContent {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%; /* Atau sesuaikan lebar printer */
-    margin: 0;
-    padding: 10px;
-    font-size: 9pt; /* Ukuran font struk */
-    color: black;
-    background-color: white !important;
-    -webkit-print-color-adjust: exact;
-  	print-color-adjust: exact;
-    box-shadow: none;
-    border: none;
-  }
-  table {
-      width: 100%;
-      border-collapse: collapse;
-  }
-  th, td {
-      padding: 2px 0;
-  }
-  button {
-      display: none !important;
-  }
-  hr {
-      border-top: 1px dashed black !important;
-      margin: 4px 0 !important;
-  }
-  /* Sembunyikan header/footer browser */
-  @page {
-      size: auto;
-      margin: 5mm;
-  }
+    /* Sembunyikan semua elemen kecuali receipt */
+    body * {
+        visibility: hidden;
+    }
+    
+    #receiptContent,
+    #receiptContent * {
+        visibility: visible;
+    }
+    
+    #receiptContent {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 80mm; /* Ukuran thermal printer */
+        margin: 0;
+        padding: 0;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        color: black !important;
+        background-color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        box-shadow: none;
+        border: none;
+    }
+    
+    /* Tabel struk */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th, td {
+        padding: 2px 4px;
+        text-align: left;
+    }
+    
+    /* Sembunyikan tombol */
+    button {
+        display: none !important;
+    }
+    
+    /* Garis putus-putus */
+    hr {
+        border: none;
+        border-top: 1px dashed black;
+        margin: 8px 0;
+    }
+    
+    /* Pengaturan halaman print */
+    @page {
+        size: 80mm auto; /* Auto height untuk thermal printer */
+        margin: 0;
+    }
+    
+    /* Reset padding untuk container */
+    div, p, h1, h2, h3, h4, h5, h6 {
+        margin: 0;
+        padding: 0;
+    }
 }
 /* ===== AKHIR PRINT STYLES ===== */

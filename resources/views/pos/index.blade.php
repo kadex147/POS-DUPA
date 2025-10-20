@@ -218,8 +218,8 @@
         <!-- Header -->
         <div style="text-align: center; margin-bottom: 15px;">
             <h2 style="margin: 0; font-size: 18px; font-weight: bold;">{{ config('app.store_name', 'Dupa Radha Kresna') }}</h2>
-            <p style="margin: 5px 0; font-size: 10px;">{{ config('app.store_address', 'Jl. Raya Ubud No XX, Gianyar, Bali') }}</p>
-            <p style="margin: 5px 0; font-size: 10px;">Telp: {{ config('app.store_phone', '0812 xxxx xxxx') }}</p>
+            <p style="margin: 5px 0; font-size: 10px;">{{ config('app.store_address', 'Jl. Manggis II, Bjr. Candi Baru, Gianyar, Bali') }}</p>
+            <p style="margin: 5px 0; font-size: 10px;">Telp: {{ config('app.store_phone', '0821 4510 7268') }}</p>
         </div>
 
         <div style="border-top: 1px dashed #000; margin: 10px 0;"></div>
