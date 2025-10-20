@@ -340,7 +340,7 @@ const ctxProducts = document.getElementById('topProductsChart');
                     legend: {
                         display: true, position: 'right', 
                         labels: { // <-- DIEDIT DI SINI
-                            boxWidth: 12, padding: 15, font: { size: 11 },
+                            boxWidth: 12, padding: 15, font: { size: 14 },
                             // --- TAMBAHKAN CALLBACK INI ---
                             generateLabels: function(chart) {
                                 const data = chart.data;
@@ -367,7 +367,7 @@ const ctxProducts = document.getElementById('topProductsChart');
                             }
                             // --- BATAS CALLBACK ---
                         },
-                        title: { display: true, text: '10 Produk Terlaris', padding: 10, font: { size: 14, weight: 'bold' } }
+                        title: { display: true, text: '10 Produk Terlaris', padding: 10, font: { size: 16, weight: 'bold' } }
                     },
                     tooltip: {
                         backgroundColor: 'rgba(0, 0, 0, 0.8)', padding: 12,
