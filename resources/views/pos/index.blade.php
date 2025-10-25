@@ -3,8 +3,9 @@
 @section('title', 'POS - Point of Sale')
 
 @section('content')
-<div class="flex gap-6 h-[calc(100vh-140px)]">
-    <div class="flex-1 flex flex-col bg-white rounded-lg p-6">
+<div class="flex flex-col lg:flex-row gap-4 lg:gap-6 h-auto lg:h-[calc(100vh-140px)]">
+    <!-- Left Section - Products -->
+    <div class="flex-1 flex flex-col bg-white rounded-lg p-4 lg:p-6 order-2 lg:order-1">
         <div class="mb-4">
             <div class="relative">
                 <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -31,7 +32,7 @@
         </div>
 
         <div id="productsGrid" class="flex-1 overflow-y-auto pb-4">
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 auto-rows-max">
+           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-5 gap-3 lg:gap-4 auto-rows-max">
                 @forelse($products as $product)
                 <div class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition flex flex-col">
                     <div class="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden relative flex-shrink-0">
@@ -71,34 +72,34 @@
         </div>
     </div>
 
-    <div class="w-96 bg-white rounded-lg shadow-lg flex flex-col">
-        <div class="p-4 border-b">
-            <h2 class="text-xl font-bold text-gray-800">{{ ucfirst(Auth::user()->role) }}</h2>
-            <p class="text-sm text-gray-500">{{ Auth::user()->username }}</p>
+<!-- Right Section - Cart -->
+<div class="lg:w-96 w-full bg-white rounded-lg shadow-lg flex flex-col order-1 lg:order-2 h-[70vh] lg:h-auto">
+    <div class="p-4 border-b flex-shrink-0">
+        <h2 class="text-lg lg:text-xl font-bold text-gray-800">{{ ucfirst(Auth::user()->role) }}</h2>
+        <p class="text-xs lg:text-sm text-gray-500">{{ Auth::user()->username }}</p>
+    </div>
+    
+    <div id="cartItems" class="flex-1 overflow-y-auto p-3 lg:p-4 space-y-2">
+        <p class="text-center text-gray-400 py-8">Keranjang kosong</p>
+    </div>
+
+    <div class="border-t p-4 space-y-3 flex-shrink-0 bg-white">
+        <div class="flex justify-between items-center text-lg font-bold">
+            <span>Total:</span>
+            <span id="cartTotal" class="text-xl text-orange-600">Rp 0</span>
         </div>
+
+        <button onclick="openOrderModal()" 
+                id="btnBuatPesanan"
+                class="w-full py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed text-sm lg:text-base"
+                disabled>
+            Pesan Sekarang
+        </button>
         
-        <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-3">
-            <p class="text-center text-gray-400 py-8">Keranjang kosong</p>
-        </div>
-
-        <div class="border-t p-4 space-y-3">
-            <div class="flex justify-between items-center text-lg font-bold">
-                <span>Total:</span>
-                <span id="cartTotal" class="text-xl">Rp 0</span>
-            </div>
-
-            <button onclick="openOrderModal()" 
-                    id="btnBuatPesanan"
-                    class="w-full py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
-                    disabled>
-                Pesan Sekarang
-            </button>
-            
-            <button onclick="clearCart()" 
-                    class="w-full py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-semibold">
-                Kosongkan Keranjang
-            </button>
-        </div>
+        <button onclick="clearCart()" 
+                class="w-full py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-semibold text-sm lg:text-base">
+            Kosongkan Keranjang
+        </button>
     </div>
 </div>
 
@@ -322,20 +323,35 @@ function updateCart() {
         total += subtotal;
         
         html += `
-            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <div class="w-14 h-14 bg-gray-200 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
-                    ${item.image ? 
-                        `<img src="/storage/${item.image}" alt="Produk" class="w-full h-full object-cover">` :
-                        `<svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-                        </svg>`
-                    }
+            <div class="bg-gray-50 rounded-lg p-2 hover:bg-gray-100 transition">
+                <!-- Product Header -->
+                <div class="flex items-start gap-2 mb-2">
+                    <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        ${item.image ? 
+                            `<img src="/storage/${item.image}" alt="Produk" class="w-full h-full object-cover">` :
+                            `<svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                            </svg>`
+                        }
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-semibold text-sm text-gray-800 truncate leading-tight">${item.name}</h4>
+                        <p class="text-xs text-gray-500 mt-0.5">Rp ${item.price.toLocaleString('id-ID')}</p>
+                    </div>
+                    <button onclick="removeItem(${index})" 
+                            class="text-red-500 hover:text-red-700 p-1 flex-shrink-0"
+                            title="Hapus item">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
                 </div>
-                <div class="flex-1 min-w-0">
-                    <h4 class="font-semibold text-sm text-gray-800 truncate">${item.name}</h4>
-                    <p class="text-xs text-gray-600">Rp ${item.price.toLocaleString('id-ID')}</p>
-                    <div class="flex items-center gap-2 mt-1">
-                        <button onclick="decreaseQuantity(${index})" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600">
+                
+                <!-- Quantity Controls -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2 bg-white rounded-lg p-1 border border-gray-200">
+                        <button onclick="decreaseQuantity(${index})" 
+                                class="w-7 h-7 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition active:scale-95">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
                             </svg>
@@ -344,12 +360,16 @@ function updateCart() {
                                value="${item.quantity}" 
                                min="1"
                                onchange="updateQuantity(${index}, this.value)"
-                               class="w-12 px-2 py-1 border border-gray-300 rounded text-center text-sm">
-                        <button onclick="increaseQuantity(${index})" class="w-6 h-6 bg-green-500 text-white rounded flex items-center justify-center hover:bg-green-600">
+                               class="w-12 text-center text-sm font-semibold border-0 focus:outline-none focus:ring-0">
+                        <button onclick="increaseQuantity(${index})" 
+                                class="w-7 h-7 bg-green-500 text-white rounded flex items-center justify-center hover:bg-green-600 transition active:scale-95">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
                         </button>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-gray-800">Rp ${subtotal.toLocaleString('id-ID')}</p>
                     </div>
                 </div>
             </div>
@@ -359,6 +379,15 @@ function updateCart() {
     cartItemsDiv.innerHTML = html;
     cartTotal.textContent = 'Rp ' + total.toLocaleString('id-ID');
     btnBuatPesanan.disabled = false;
+}
+
+// Tambahkan fungsi baru untuk remove item
+function removeItem(index) {
+    if (confirm('Hapus item ini dari keranjang?')) {
+        cart.splice(index, 1);
+        saveCart();
+        updateCart();
+    }
 }
 
 function increaseQuantity(index) {
@@ -524,10 +553,10 @@ function showPostTransactionModal(transactionData) {
         itemsBody.innerHTML += row;
     });
 
-    // Tampilkan modal
-    const modal = document.getElementById('postTransactionDetailModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+// Tampilkan modal
+const modal = document.getElementById('postTransactionDetailModal');
+modal.classList.remove('hidden');
+modal.classList.add('flex');
 }
 
 function closePostTransactionModal() {
@@ -543,83 +572,228 @@ function printReceipt() {
         return;
     }
 
-    // Format tanggal untuk struk
+    // Format tanggal
     const date = new Date(currentTransactionData.created_at);
-    const formattedDate = date.toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    }) + ', ' + date.toLocaleTimeString('id-ID', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const formattedDate = `${day}/${month}/${year}, ${hours}:${minutes}`;
 
-    // Isi data receipt
-    document.getElementById('receipt-invoice').textContent = currentTransactionData.invoice_number;
-    document.getElementById('receipt-date').textContent = formattedDate;
-    document.getElementById('receipt-cashier').textContent = currentTransactionData.user.username;
-    document.getElementById('receipt-total').textContent = 'Rp ' + parseFloat(currentTransactionData.total).toLocaleString('id-ID');
-
-    // Isi items
-    const itemsContainer = document.getElementById('receipt-items');
-    itemsContainer.innerHTML = '';
-
+    // Generate items HTML
+    let itemsHTML = '';
     currentTransactionData.items.forEach(item => {
-        const itemDiv = document.createElement('div');
-        itemDiv.style.marginBottom = '8px';
-        itemDiv.innerHTML = `
-            <div style="font-weight: bold; margin-bottom: 2px;">${item.product.name}</div>
-            <div style="display: flex; justify-content: space-between;">
-                <span style="flex: 2;"></span>
-                <span style="flex: 1; text-align: center;">${item.quantity}</span>
-                <span style="flex: 1; text-align: right;">${parseFloat(item.price).toLocaleString('id-ID')}</span>
-                <span style="flex: 1; text-align: right;">${parseFloat(item.subtotal).toLocaleString('id-ID')}</span>
-            </div>
+        const itemName = item.product.name;
+        const qty = item.quantity;
+        const price = parseFloat(item.price);
+        const subtotal = parseFloat(item.subtotal);
+        
+        itemsHTML += `
+<div style="margin-bottom: 3px;">
+  <div style="font-size: 13px;">${itemName}</div>
+  <table width="100%" style="font-size: 12px;">
+    <tr>
+      <td width="65%">${qty} x ${price.toLocaleString('id-ID')}</td>
+      <td width="35%" align="right">${subtotal.toLocaleString('id-ID')}</td>
+    </tr>
+  </table>
+</div>
         `;
-        itemsContainer.appendChild(itemDiv);
     });
+
+    // Generate HTML untuk print
+    const printHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Struk - ${currentTransactionData.invoice_number}</title>
+    <style>
+        @page {
+            margin: 0;
+            size: 58mm auto;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2mm;
+            width: 50mm;
+            background: white;
+            color: #000;
+            line-height: 1.2;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #000;
+        }
+        
+        .header h1 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        
+        .header p {
+            font-size: 10px;
+            margin: 1px 0;
+        }
+        
+        .divider {
+            border-top: 1px dashed #000;
+            margin: 5px 0;
+        }
+        
+        .info {
+            font-size: 10px;
+            margin: 5px 0;
+        }
+        
+        .info table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .info td {
+            padding: 1px 0;
+        }
+        
+        .info td:first-child {
+            width: 30%;
+        }
+        
+        .info td:last-child {
+            width: 70%;
+            text-align: right;
+        }
+        
+        .items {
+            margin: 5px 0;
+        }
+        
+        .items table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .items td {
+            padding: 0;
+        }
+        
+        .total-section {
+            border-top: 1px dashed #000;
+            padding-top: 5px;
+            margin-top: 5px;
+        }
+        
+        .total-section table {
+            width: 100%;
+            font-size: 13px;
+        }
+        
+        .total-section td {
+            padding: 2px 0;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 8px;
+            padding-top: 5px;
+            border-top: 1px dashed #000;
+            font-size: 10px;
+            line-height: 1.3;
+        }
+        
+        @media print {
+            body {
+                margin: 0;
+                padding: 3mm;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <h1>Dupa Radha Kresna</h1>
+    <p>Jl. Manggis II, Bjr Candi Baru Gianyar, Bali</p>
+    <p>Telp: 0821 4510 7268</p>
+</div>
+
+<div class="divider"></div>
+
+<!-- Info Transaksi -->
+<div class="info">
+    <table>
+        <tr>
+            <td>Invoice:</td>
+            <td>${currentTransactionData.invoice_number}</td>
+        </tr>
+        <tr>
+            <td>Tanggal:</td>
+            <td>${formattedDate}</td>
+        </tr>
+        <tr>
+            <td>Kasir:</td>
+            <td>${currentTransactionData.user.username}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- Items -->
+<div class="items">
+    ${itemsHTML}
+</div>
+
+<!-- Total -->
+<div class="total-section">
+    <table>
+        <tr>
+            <td>TOTAL:</td>
+            <td align="right">Rp ${parseFloat(currentTransactionData.total).toLocaleString('id-ID')}</td>
+        </tr>
+    </table>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+    <p>Terima kasih atas</p>
+    <p>kunjungan Anda!</p>
+    <p style="margin-top: 5px;">--- Barang yang ---</p>
+    <p> sudah dibeli </p>
+    <p>--- tidak dapat ---</p>
+    <p>dikembalikan</p>
+</div>
+
+</body>
+</html>
+    `;
 
     // Buka window print
-    const receiptContent = document.getElementById('receiptContent').innerHTML;
-    const printWindow = window.open('', '', 'width=350,height=600');
-    
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Struk - ${currentTransactionData.invoice_number}</title>
-            <style>
-                @media print {
-                    @page {
-                        margin: 0;
-                        size: 80mm auto;
-                    }
-                    body {
-                        margin: 0;
-                        padding: 0;
-                    }
-                }
-                body {
-                    margin: 0;
-                    padding: 0;
-                }
-            </style>
-        </head>
-        <body>
-            ${receiptContent}
-        </body>
-        </html>
-    `);
-    
+    const printWindow = window.open('', '', 'width=200,height=600');
+    printWindow.document.write(printHTML);
     printWindow.document.close();
     
-    // Tunggu load sebelum print
     setTimeout(() => {
         printWindow.focus();
         printWindow.print();
         printWindow.close();
-    }, 250);
+    }, 300);
 }
 
 function filterCategory(categoryId) {

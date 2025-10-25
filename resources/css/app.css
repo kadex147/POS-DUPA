@@ -10,7 +10,110 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-/* ===== PRINT STYLES UNTUK STRUK ===== */
+/* ===== RESPONSIVE STYLES ===== */
+/* Smooth transitions */
+.sidebar-transition {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Mobile overlay */
+.mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.mobile-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Sidebar adjustments */
+@media (max-width: 1024px) {
+    aside {
+        transform: translateX(-100%);
+    }
+    
+    aside.active {
+        transform: translateX(0);
+    }
+}
+
+/* Modal responsive */
+@media (max-width: 640px) {
+    .fixed > .bg-white,
+    #orderModal > .bg-white,
+    #postTransactionDetailModal > .bg-white {
+        margin: 1rem;
+        max-width: calc(100% - 2rem);
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+    }
+}
+
+/* POS Layout responsive */
+@media (max-width: 1024px) {
+    /* Stack layout on mobile */
+    .flex.gap-6 {
+        flex-direction: column;
+    }
+    
+    /* Cart full width on mobile */
+    .w-96 {
+        width: 100% !important;
+        max-width: 100%;
+    }
+    
+    /* Adjust product grid */
+    .grid.grid-cols-2 {
+        gap: 0.75rem;
+    }
+}
+
+/* Adjust padding on mobile */
+@media (max-width: 768px) {
+    main {
+        padding: 1rem !important;
+    }
+    
+    .p-6 {
+        padding: 1rem !important;
+    }
+    
+    .px-8 {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}
+
+/* Category tabs scroll */
+.overflow-x-auto {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db transparent;
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+    height: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* ===== PRINT STYLES UNTUK STRUK THERMAL 58MM ===== */
 @media print {
     /* Sembunyikan semua elemen kecuali receipt */
     body * {
@@ -22,56 +125,178 @@
         visibility: visible;
     }
     
+    /* Container utama struk */
     #receiptContent {
         position: absolute;
         left: 0;
         top: 0;
-        width: 80mm; /* Ukuran thermal printer */
+        width: 58mm;
         margin: 0;
-        padding: 0;
-        font-family: 'Courier New', monospace;
+        padding: 8px;
+        
+        font-family: 'Courier New', 'Consolas', monospace;
         font-size: 12px;
+        font-weight: normal;
+        line-height: 1.4;
+        
         color: black !important;
         background-color: white !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
         box-shadow: none;
         border: none;
+        word-wrap: break-word;
+        
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Header */
+    #receiptContent .header {
+        text-align: center;
+        margin-bottom: 8px;
+        border-bottom: 1px dashed #000;
+        padding-bottom: 8px;
     }
     
-    /* Tabel struk */
-    table {
+    #receiptContent .header h2 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    
+    #receiptContent .header p {
+        margin: 2px 0;
+        font-size: 11px;
+        line-height: 1.3;
+    }
+    
+    /* Info transaksi */
+    #receiptContent .info {
+        margin: 8px 0;
+        font-size: 11px;
+        line-height: 1.4;
+    }
+    
+    #receiptContent .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 2px 0;
+    }
+    
+    /* Divider */
+    #receiptContent .divider {
+        border-top: 1px dashed #000;
+        margin: 6px 0;
+    }
+    
+    /* Items */
+    #receiptContent .items {
+        margin: 8px 0;
+    }
+    
+    #receiptContent .items table {
         width: 100%;
         border-collapse: collapse;
     }
     
-    th, td {
-        padding: 2px 4px;
-        text-align: left;
+    #receiptContent .items td {
+        padding: 2px 0;
     }
     
-    /* Sembunyikan tombol */
-    button {
-        display: none !important;
+    /* Total */
+    #receiptContent .total {
+        border-top: 1px dashed #000;
+        padding-top: 6px;
+        margin-top: 6px;
     }
     
-    /* Garis putus-putus */
-    hr {
-        border: none;
-        border-top: 1px dashed black;
-        margin: 8px 0;
+    #receiptContent .total-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        font-weight: bold;
+        margin: 4px 0;
     }
     
-    /* Pengaturan halaman print */
+    /* Footer */
+    #receiptContent .footer {
+        text-align: center;
+        margin-top: 10px;
+        border-top: 1px dashed #000;
+        padding-top: 8px;
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    /* Page setup untuk printer thermal 58mm */
     @page {
-        size: 80mm auto; /* Auto height untuk thermal printer */
+        size: 58mm auto;
         margin: 0;
-    }
-    
-    /* Reset padding untuk container */
-    div, p, h1, h2, h3, h4, h5, h6 {
-        margin: 0;
-        padding: 0;
     }
 }
 /* ===== AKHIR PRINT STYLES ===== */
+
+/* ===== UTILITY CLASSES ===== */
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Smooth scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Focus visible for accessibility */
+*:focus-visible {
+    outline: 2px solid #4f46e5;
+    outline-offset: 2px;
+}
+
+/* Prevent text selection on buttons */
+button {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Loading state */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Slide in animation for sidebar */
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-in-out;
+}
