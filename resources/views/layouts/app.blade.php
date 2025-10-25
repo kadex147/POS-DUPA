@@ -5,28 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Point of Sale')</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    {{-- Vite Assets - Tailwind CSS --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    {{-- Alpine.js for interactivity --}}
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <style>
         [x-cloak] { display: none !important; }
-        
-        /* Smooth transitions */
-        .sidebar-transition {
-            transition: transform 0.3s ease-in-out;
-        }
-        
-        /* Mobile overlay */
-        .mobile-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 40;
-        }
-        
-        .mobile-overlay.active {
-            display: block;
-        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -40,6 +27,7 @@
         <!-- Sidebar -->
         <aside class="w-60 bg-gray-50 border-r border-gray-200 fixed lg:static h-full z-50 sidebar-transition"
                :class="{ '-translate-x-full lg:translate-x-0': !sidebarOpen, 'translate-x-0': sidebarOpen }">
+            <!-- ... rest of sidebar ... -->
             <div class="p-6 border-b border-gray-200 text-center">
                 <h2 class="text-lg font-semibold text-gray-700">Dupa Radha Kresna</h2>
                 <p class="text-sm text-gray-500 mt-1">Point of Sale</p>
