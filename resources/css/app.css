@@ -11,37 +11,6 @@
 }
 
 /* ===== RESPONSIVE STYLES ===== */
-/* Smooth transitions */
-.sidebar-transition {
-    transition: transform 0.3s ease-in-out;
-}
-
-/* Mobile overlay */
-.mobile-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 40;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-}
-
-.mobile-overlay.active {
-    display: block;
-    opacity: 1;
-}
-
-/* Sidebar adjustments */
-@media (max-width: 1024px) {
-    aside {
-        transform: translateX(-100%);
-    }
-    
-    aside.active {
-        transform: translateX(0);
-    }
-}
 
 /* Modal responsive */
 @media (max-width: 640px) {
