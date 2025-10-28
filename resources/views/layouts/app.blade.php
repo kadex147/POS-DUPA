@@ -5,41 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Point of Sale')</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         [x-cloak] { display: none !important; }
-        
-        /* Smooth transitions */
-        .sidebar-transition {
-            transition: transform 0.3s ease-in-out;
-        }
-        
-        /* Mobile overlay */
-        .mobile-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 40;
-        }
-        
-        .mobile-overlay.active {
-            display: block;
-        }
     </style>
 </head>
 <body class="bg-gray-100">
-    <div class="flex h-screen" x-data="{ sidebarOpen: false }">
+    <div class="flex h-screen">
         
         <!-- Mobile Overlay -->
-        <div class="mobile-overlay" 
-             :class="{ 'active': sidebarOpen }"
-             @click="sidebarOpen = false"></div>
+        <div id="overlay" 
+             class="fixed inset-0 bg-black/50 z-40 lg:hidden hidden"
+             onclick="toggleSidebar()">
+        </div>
         
         <!-- Sidebar -->
-        <aside class="w-60 bg-gray-50 border-r border-gray-200 fixed lg:static h-full z-50 sidebar-transition"
-               :class="{ '-translate-x-full lg:translate-x-0': !sidebarOpen, 'translate-x-0': sidebarOpen }">
+        <aside id="sidebar"
+               class="w-60 bg-gray-50 border-r border-gray-200 fixed lg:static h-full z-50 -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+            
             <div class="p-6 border-b border-gray-200 text-center">
                 <h2 class="text-lg font-semibold text-gray-700">Dupa Radha Kresna</h2>
                 <p class="text-sm text-gray-500 mt-1">Point of Sale</p>
@@ -90,14 +74,14 @@
             </nav>
         </aside>
 
-        <div class="flex-1 flex flex-col overflow-hidden lg:ml-0">
+        <div class="flex-1 flex flex-col overflow-hidden">
             
             <!-- Header/Navbar -->
             <header class="bg-white border-b border-gray-200 px-4 lg:px-8 py-4">
                 <div class="flex justify-between items-center">
                     <!-- Hamburger Menu (Mobile Only) -->
-                    <button @click="sidebarOpen = !sidebarOpen" 
-                            class="lg:hidden p-2 rounded-lg hover:bg-gray-100">
+                    <button onclick="toggleSidebar()" 
+                            class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition">
                         <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
@@ -111,7 +95,7 @@
                                 <div class="text-sm font-semibold text-gray-800">{{ ucfirst(Auth::user()->role) }}</div>
                                 <div class="text-xs text-gray-500">{{ Auth::user()->username }}</div>
                             </div>
-                            <div class="w-9 h-9 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <div class="w-9 h-9 bg-gray-600 rounded-full flex items-center justify-center">
                                 <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                 </svg>
@@ -147,6 +131,17 @@
             </main>
         </div>
     </div>
+    
+    <!-- JavaScript untuk Toggle Sidebar -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+    </script>
     
     @stack('scripts')
 </body>

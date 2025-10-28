@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Point Of Sale - Login</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    {{-- Vite Assets - Tailwind CSS --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="flex min-h-screen">
-    <!-- Login Container -->
-    <div class="w-[275px] bg-gray-50 px-8 py-10 flex flex-col border-r border-gray-300">
+    <!-- Login Container - Responsive -->
+    <div class="w-full lg:w-[275px] bg-gray-50 px-6 sm:px-8 py-8 sm:py-10 flex flex-col lg:border-r border-gray-300">
         <h1 class="text-2xl text-gray-700 text-center mb-2">Point Of sale</h1>
         <p class="text-sm text-gray-600 text-center mb-10">login</p>
 
@@ -48,8 +50,8 @@
         </form>
     </div>
 
-    <!-- Image Section -->
-    <div class="flex-1 bg-gray-300 flex items-center justify-center">
+    <!-- Image Section - Hidden on Mobile, Visible on Desktop -->
+    <div class="hidden lg:flex flex-1 bg-gray-300 items-center justify-center">
         <div class="w-[300px] h-[220px] bg-gray-400 rounded-lg flex items-center justify-center relative">
             <!-- Mountain Shape -->
             <div class="absolute bottom-10 w-[150px] h-[100px] bg-white" 

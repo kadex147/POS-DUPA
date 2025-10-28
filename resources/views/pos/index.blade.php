@@ -35,7 +35,7 @@
            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-5 gap-3 lg:gap-4 auto-rows-max">
                 @forelse($products as $product)
                 <div class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition flex flex-col">
-                    <div class="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden relative flex-shrink-0">
+                    <div class="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden relative shrink-0">
                         @if($product->image)
                             <img src="{{ asset('storage/' . $product->image) }}" 
                                  alt="Produk" 
@@ -54,7 +54,7 @@
                         </button>
                     </div>
                     
-                    <div class="p-3 bg-white border-t border-gray-100 flex-grow flex flex-col justify-between">
+                    <div class="p-3 bg-white border-t border-gray-100 grow flex flex-col justify-between">
                         <h3 class="font-semibold text-gray-800 text-sm mb-2 line-clamp-2 leading-tight" title="{{ $product->name }}">{{ $product->name }}</h3>
                         <p class="text-sm font-bold text-orange-600">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
                     </div>
@@ -74,7 +74,7 @@
 
 <!-- Right Section - Cart -->
 <div class="lg:w-96 w-full bg-white rounded-lg shadow-lg flex flex-col order-1 lg:order-2 h-[70vh] lg:h-auto">
-    <div class="p-4 border-b flex-shrink-0">
+    <div class="p-4 border-b shrink-0">
         <h2 class="text-lg lg:text-xl font-bold text-gray-800">{{ ucfirst(Auth::user()->role) }}</h2>
         <p class="text-xs lg:text-sm text-gray-500">{{ Auth::user()->username }}</p>
     </div>
@@ -83,7 +83,7 @@
         <p class="text-center text-gray-400 py-8">Keranjang kosong</p>
     </div>
 
-    <div class="border-t p-4 space-y-3 flex-shrink-0 bg-white">
+    <div class="border-t p-4 space-y-3 shrink-0 bg-white">
         <div class="flex justify-between items-center text-lg font-bold">
             <span>Total:</span>
             <span id="cartTotal" class="text-xl text-orange-600">Rp 0</span>
@@ -104,30 +104,32 @@
 </div>
 
 <!-- Modal Konfirmasi Pesanan -->
-<div id="orderModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-full max-w-md relative">
-        <button onclick="closeOrderModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+<div id="orderModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl p-4 lg:p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
+        <button onclick="closeOrderModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
             </svg>
         </button>
         
-        <h3 class="text-xl font-bold mb-4">Buat Pesanan</h3>
+        <h3 class="text-lg lg:text-xl font-bold mb-4 text-gray-800">Buat Pesanan</h3>
         
-        <table class="w-full mb-4">
-            <thead>
-                <tr class="border-b">
-                    <th class="text-left py-2 text-sm">Nama</th>
-                    <th class="text-center py-2 text-sm">Jumlah</th>
-                    <th class="text-right py-2 text-sm">Total Harga</th>
-                </tr>
-            </thead>
-            <tbody id="modalCartItems" class="text-sm">
-            </tbody>
-        </table>
+        <div class="overflow-x-auto mb-4">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b">
+                        <th class="text-left py-2 text-xs lg:text-sm">Nama</th>
+                        <th class="text-center py-2 text-xs lg:text-sm">Jumlah</th>
+                        <th class="text-right py-2 text-xs lg:text-sm">Total Harga</th>
+                    </tr>
+                </thead>
+                <tbody id="modalCartItems" class="text-xs lg:text-sm">
+                </tbody>
+            </table>
+        </div>
         
         <div class="border-t pt-4 mb-4">
-            <div class="flex justify-between font-bold text-lg">
+            <div class="flex justify-between font-bold text-base lg:text-lg">
                 <span>Total:</span>
                 <span id="modalTotal">Rp 0</span>
             </div>
@@ -135,16 +137,16 @@
         
         <button onclick="confirmOrder()" 
                 id="btnConfirmOrder"
-                class="w-full py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-semibold">
+                class="w-full py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-semibold text-sm lg:text-base">
             Konfirmasi Pesanan
         </button>
     </div>
 </div>
 
 <!-- Modal Transaksi Berhasil dengan Opsi Print -->
-<div id="postTransactionDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-full max-w-md relative">
-        <button onclick="closePostTransactionModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+<div id="postTransactionDetailModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl p-4 lg:p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
+        <button onclick="closePostTransactionModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
             </svg>
@@ -159,7 +161,7 @@
             </div>
         </div>
 
-        <h3 class="text-xl font-bold mb-4 text-green-600 text-center">Transaksi Berhasil!</h3> 
+        <h3 class="text-lg lg:text-xl font-bold mb-4 text-green-600 text-center">Transaksi Berhasil!</h3> 
         
         <div class="mb-4 space-y-2 text-sm bg-gray-50 p-4 rounded-lg">
             <div class="flex justify-between">
@@ -176,20 +178,22 @@
             </div>
         </div>
 
-        <table class="w-full mb-4">
-            <thead>
-                <tr class="border-b bg-gray-50">
-                    <th class="text-left py-2 text-sm px-2">Nama</th>
-                    <th class="text-center py-2 text-sm px-2">Jml</th>
-                    <th class="text-right py-2 text-sm px-2">Total</th>
-                </tr>
-            </thead>
-            <tbody id="postDetailModalItemsBody" class="text-sm divide-y">
-            </tbody>
-        </table>
+        <div class="overflow-x-auto mb-4">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b bg-gray-50">
+                        <th class="text-left py-2 text-xs lg:text-sm px-2">Nama</th>
+                        <th class="text-center py-2 text-xs lg:text-sm px-2">Jml</th>
+                        <th class="text-right py-2 text-xs lg:text-sm px-2">Total</th>
+                    </tr>
+                </thead>
+                <tbody id="postDetailModalItemsBody" class="text-xs lg:text-sm divide-y">
+                </tbody>
+            </table>
+        </div>
         
         <div class="border-t pt-4 mb-4">
-            <div class="flex justify-between font-bold text-lg">
+            <div class="flex justify-between font-bold text-base lg:text-lg">
                 <span>TOTAL:</span>
                 <span id="postDetailModalTotal" class="text-green-600">Rp 0</span>
             </div>
@@ -198,7 +202,7 @@
         <!-- Tombol Aksi -->
         <div class="space-y-2">
             <button onclick="printReceipt()" 
-                    class="w-full py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition font-semibold flex items-center justify-center gap-2">
+                    class="w-full py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition font-semibold flex items-center justify-center gap-2 text-sm lg:text-base">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                 </svg>
@@ -206,7 +210,7 @@
             </button>
             
             <button onclick="closePostTransactionModal()" 
-                    class="w-full py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-semibold">
+                    class="w-full py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-semibold text-sm lg:text-base">
                 Tutup
             </button>
         </div>
