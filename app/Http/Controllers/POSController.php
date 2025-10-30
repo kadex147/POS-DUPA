@@ -7,71 +7,86 @@ use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon; // <-- DITAMBAHKAN
+use Illuminate\Support\Facades\Auth;
 
 class POSController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->get('search');
-        $categoryFilter = $request->get('category');
-
+        // Deteksi mobile device
+        $isMobile = $this->isMobileDevice($request);
+        
+        // Set limit berdasarkan device
+        $perPage = $isMobile ? 10 : 10;
+        
         $query = Product::with('category');
-
-        if ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
+        
+        // Filter berdasarkan kategori jika ada
+        if ($request->has('category') && $request->category != '') {
+            $query->where('category_id', $request->category);
         }
-
-        if ($categoryFilter) {
-            $query->where('category_id', $categoryFilter);
+        
+        // Filter berdasarkan pencarian jika ada
+        if ($request->has('search') && $request->search != '') {
+            $query->where('name', 'like', '%' . $request->search . '%');
         }
-
-        $products = $query->paginate(12);
-        $categories = Category::all();
-
+        
+        $products = $query->orderBy('name')->paginate($perPage);
+        $categories = Category::orderBy('name')->get();
+        
         return view('pos.index', compact('products', 'categories'));
     }
-
+    
+    /**
+     * Deteksi apakah request dari mobile device
+     */
+    private function isMobileDevice(Request $request)
+    {
+        $userAgent = $request->header('User-Agent');
+        
+        // Pattern untuk deteksi mobile
+        $mobilePatterns = [
+            'Mobile', 'Android', 'iPhone', 'iPad', 'iPod', 
+            'BlackBerry', 'Windows Phone', 'webOS'
+        ];
+        
+        foreach ($mobilePatterns as $pattern) {
+            if (stripos($userAgent, $pattern) !== false) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     public function store(Request $request)
     {
-        // Validasi input
-        $validated = $request->validate([
-            'items' => 'required|array|min:1', // Pastikan ada minimal 1 item
+        $request->validate([
+            'items' => 'required|array',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.price' => 'required|numeric|min:0',
             'items.*.subtotal' => 'required|numeric|min:0',
             'total' => 'required|numeric|min:0',
         ]);
-
-        DB::beginTransaction();
+        
         try {
-            // Generate unique invoice number
-            $today = Carbon::now()->format('Ymd'); // Menggunakan Carbon
-            $latestTransaction = Transaction::whereDate('created_at', Carbon::today()) // Menggunakan Carbon
-                                        ->latest('id') // Lebih efisien daripada orderBy desc + first
-                                        ->first();
+            DB::beginTransaction();
             
-            $sequence = $latestTransaction ? (int)substr($latestTransaction->invoice_number, -4) + 1 : 1;
+            // Generate invoice number
+            $lastTransaction = Transaction::whereDate('created_at', today())->latest()->first();
+            $invoiceNumber = 'INV-' . date('Ymd') . '-' . str_pad(($lastTransaction ? $lastTransaction->id + 1 : 1), 4, '0', STR_PAD_LEFT);
             
-            // Loop untuk memastikan keunikan jika ada transaksi bersamaan (jarang terjadi tapi aman)
-            $invoiceNumber = '';
-            do {
-                $invoiceNumber = 'INV' . $today . str_pad($sequence, 4, '0', STR_PAD_LEFT);
-                $sequence++; // Siapkan nomor berikutnya jika yang ini sudah ada
-            } while (Transaction::where('invoice_number', $invoiceNumber)->exists());
-
             // Create transaction
             $transaction = Transaction::create([
                 'invoice_number' => $invoiceNumber,
                 'user_id' => Auth::id(),
-                'total' => $validated['total'],
+                'total' => $request->total,
             ]);
-
+            
             // Create transaction items
-            foreach ($validated['items'] as $item) {
+            foreach ($request->items as $item) {
                 TransactionItem::create([
                     'transaction_id' => $transaction->id,
                     'product_id' => $item['product_id'],
@@ -79,33 +94,26 @@ class POSController extends Controller
                     'price' => $item['price'],
                     'subtotal' => $item['subtotal'],
                 ]);
-                 // Idealnya kurangi stok produk di sini juga
-                 // Product::find($item['product_id'])->decrement('stock', $item['quantity']);
             }
-
-            DB::commit();
-
-            // --- PERUBAHAN DI SINI ---
-            // Load relasi yang diperlukan untuk modal detail
-            $transaction->load('user', 'items.product'); 
             
-            // Kirim response sukses beserta data transaksi lengkap
+            DB::commit();
+            
+            // Load relationships untuk response
+            $transaction->load(['items.product', 'user']);
+            
             return response()->json([
                 'success' => true,
-                'message' => 'Transaksi berhasil', // Opsional: Tambahkan pesan
+                'message' => 'Transaksi berhasil disimpan',
                 'invoice_number' => $invoiceNumber,
-                'transaction' => $transaction // <-- DATA LENGKAP DIKIRIM
+                'transaction' => $transaction
             ]);
-            // --- BATAS PERUBAHAN ---
-
+            
         } catch (\Exception $e) {
-            DB::rollback();
-            // Log error untuk debugging
-            // \Log::error('Transaction failed: ' . $e->getMessage()); 
+            DB::rollBack();
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Transaksi gagal: Terjadi kesalahan internal.' // Pesan lebih umum ke user
-                // 'message' => 'Transaksi gagal: ' . $e->getMessage() // Jangan tampilkan detail error ke user
+                'message' => 'Gagal menyimpan transaksi: ' . $e->getMessage()
             ], 500);
         }
     }

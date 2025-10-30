@@ -76,7 +76,7 @@
                 </div>
             </div>
 
-            <div class="h-64 lg:h-80"> 
+            <div class="h-62 lg:h-100"> 
                 <canvas id="incomeChart"></canvas>
             </div>
             <div class="mt-4 text-center">
@@ -88,7 +88,7 @@
         <!-- Top Products Chart -->
         <div class="bg-white rounded-lg border border-gray-200 p-4 lg:p-6">
             <h3 class="text-base lg:text-lg font-semibold text-gray-800 mb-4">Produk Terlaris</h3>
-            <div class="h-96 lg:h-124"> 
+            <div class="h-96 lg:h-100"> 
                 @if($topProducts->isEmpty())
                     <p class="text-gray-400 text-center py-8">Belum ada data produk terjual</p>
                 @else
@@ -201,98 +201,24 @@
     </div>
 </div>
 
-<!-- Transaction Detail Modal -->
-<div id="transactionDetailModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-lg shadow-xl p-4 lg:p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
-        <button onclick="closeTransactionDetailModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-        </button>
-        <h3 class="text-lg lg:text-xl font-bold mb-4 text-gray-800">Detail Transaksi</h3>
-        <div class="mb-4 space-y-1 text-sm text-gray-600">
-            <div class="flex justify-between">
-                <span class="font-semibold">Invoice:</span>
-                <span id="detailModalInvoice" class="font-mono"></span>
-            </div>
-            <div class="flex justify-between">
-                <span class="font-semibold">Tanggal:</span>
-                <span id="detailModalTanggal"></span>
-            </div>
-            <div class="flex justify-between">
-                <span class="font-semibold">Kasir:</span>
-                <span id="detailModalKasir"></span>
-            </div>
-        </div>
-        <div class="overflow-x-auto">
-            <table class="w-full mb-4">
-                <thead>
-                    <tr class="border-b">
-                        <th class="text-left py-2 text-sm">Nama</th>
-                        <th class="text-center py-2 text-sm">Jumlah</th>
-                        <th class="text-right py-2 text-sm">Total Harga</th>
-                    </tr>
-                </thead>
-                <tbody id="detailModalItemsBody" class="text-sm divide-y"></tbody>
-            </table>
-        </div>
-        <div class="border-t pt-4 mb-4">
-            <div class="flex justify-between font-bold text-base lg:text-lg">
-                <span>Total:</span>
-                <span id="detailModalTotal">Rp 0</span>
-            </div>
-        </div>
-        <button onclick="closeTransactionDetailModal()" 
-                class="w-full py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-semibold text-sm lg:text-base">
-            Tutup
-        </button>
-    </div>
-</div>
+{{-- Include Print Component --}}
+@include('components.print-receipt-modal')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script>
-    // Modal functions
+    // Fungsi untuk menampilkan detail transaksi
     function showTransactionDetails(event, transactionId) {
         event.preventDefault();
         fetch(`/transaction-details/${transactionId}`)
             .then(response => response.json())
             .then(data => {
-                const formattedDate = new Date(data.created_at).toLocaleString('id-ID', {
-                    day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                });
-                const formattedTotal = 'Rp ' + parseFloat(data.total).toLocaleString('id-ID');
-
-                document.getElementById('detailModalInvoice').textContent = data.invoice_number;
-                document.getElementById('detailModalTanggal').textContent = formattedDate;
-                document.getElementById('detailModalKasir').textContent = data.user.username;
-                document.getElementById('detailModalTotal').textContent = formattedTotal;
-
-                const itemsBody = document.getElementById('detailModalItemsBody');
-                itemsBody.innerHTML = '';
-
-                data.items.forEach(item => {
-                    const itemTotal = 'Rp ' + parseFloat(item.subtotal).toLocaleString('id-ID');
-                    const row = `
-                        <tr class="border-gray-100">
-                            <td class="py-2">${item.product.name}</td>
-                            <td class="text-center py-2">${item.quantity}</td>
-                            <td class="text-right py-2">${itemTotal}</td>
-                        </tr>
-                    `;
-                    itemsBody.innerHTML += row;
-                });
-
-                document.getElementById('transactionDetailModal').classList.remove('hidden');
-                document.getElementById('transactionDetailModal').classList.add('flex');
+                // Gunakan fungsi global dari component
+                window.openPrintModal(data);
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('Gagal memuat detail transaksi.');
             });
-    }
-
-    function closeTransactionDetailModal() {
-        const modal = document.getElementById('transactionDetailModal');
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
     }
 
     // Chart data
@@ -324,7 +250,7 @@
                 pointBorderColor: '#fff',
                 pointBorderWidth: 2,
                 pointHoverRadius: 6,
-                pointHitRadius: 30,
+                pointHitRadius: 70,
             }]
         },
         options: {

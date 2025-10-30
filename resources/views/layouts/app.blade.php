@@ -88,42 +88,44 @@
                     </button>
 
                     <!-- User Menu -->
-                    <div x-data="{ open: false }" class="relative ml-auto">
-                        <button @click="open = !open" 
-                                class="flex items-center gap-2 lg:gap-3 px-2 lg:px-3 py-2 rounded-lg hover:bg-gray-50 transition">
-                            <div class="text-right hidden sm:block">
-                                <div class="text-sm font-semibold text-gray-800">{{ ucfirst(Auth::user()->role) }}</div>
-                                <div class="text-xs text-gray-500">{{ Auth::user()->username }}</div>
-                            </div>
-                            <div class="w-9 h-9 bg-gray-600 rounded-full flex items-center justify-center">
-                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                </svg>
-                            </div>
-                        </button>
+<!-- User Menu -->
+<div x-data="{ open: false }" class="relative ml-auto">
+    <button @click="open = !open" 
+            type="button"
+            class="flex items-center gap-2 lg:gap-3 px-2 lg:px-3 py-2 rounded-lg hover:bg-gray-50 transition">
+        <!-- Info User - Tampil di SEMUA ukuran layar -->
+        <div class="text-right">
+            <div class="text-xs lg:text-sm font-semibold text-gray-800">{{ ucfirst(Auth::user()->role) }}</div>
+            <div class="text-xs text-gray-500">{{ Auth::user()->username }}</div>
+        </div>
+        <!-- Avatar -->
+        <div class="w-8 h-8 lg:w-9 lg:h-9 bg-gray-600 rounded-full flex items-center justify-center">
+            <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+        </div>
+    </button>
 
-                        <!-- Dropdown Menu -->
-                        <div x-show="open" 
-                             @click.away="open = false"
-                             x-cloak
-                             class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                            <div class="px-4 py-2 border-b sm:hidden">
-                                <div class="text-sm font-semibold text-gray-800">{{ ucfirst(Auth::user()->role) }}</div>
-                                <div class="text-xs text-gray-500">{{ Auth::user()->username }}</div>
-                            </div>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" 
-                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                                    </svg>
-                                    Logout
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+    <!-- Dropdown Menu -->
+    <div x-show="open" 
+         @click.outside="open = false"
+         x-cloak
+         style="display: none;"
+         class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+        
+        <!-- Logout Button -->
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" 
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Logout
+            </button>
+        </form>
+    </div>
+</div>
             </header>
 
             <main class="flex-1 p-4 lg:p-8 overflow-y-auto">
