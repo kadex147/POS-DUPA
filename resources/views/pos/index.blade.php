@@ -176,8 +176,7 @@
 </div>
 
 {{-- Include Transaction Success Modal Component --}}
-@include('components.transaction-success-modal')
-
+@include('components.modal-print')
 @push('scripts')
 <script>
 // Load cart from localStorage
@@ -385,19 +384,36 @@ function confirmOrder() {
     })
     .then(response => response.json())
     .then(data => {
+        console.log('=== RESPONSE DEBUG ===');
+        console.log('Full response:', data);
+        console.log('Success:', data.success);
+        console.log('Transaction:', data.transaction);
+        
+        if (data.transaction) {
+            console.log('Transaction total:', data.transaction.total);
+            console.log('Transaction items:', data.transaction.items);
+        }
+        console.log('=====================');
+        
         if (data.success && data.transaction) {
-            // Tutup modal konfirmasi
             closeOrderModal();
             
-            // Tampilkan modal sukses menggunakan fungsi dari component
-            window.showPostTransactionModal(data.transaction);
+            // PERBAIKAN: Pastikan modal function dipanggil dengan benar
+            if (typeof window.openUnifiedModal === 'function') {
+                console.log('Calling openUnifiedModal with:', data.transaction);
+                window.openUnifiedModal(data.transaction, true);
+            } else if (typeof window.showPostTransactionModal === 'function') {
+                console.log('Calling showPostTransactionModal with:', data.transaction);
+                window.showPostTransactionModal(data.transaction);
+            } else {
+                console.error('Modal functions not found!');
+                alert('Transaksi berhasil! Invoice: ' + data.invoice_number);
+            }
             
-            // Kosongkan keranjang
             cart = [];
             saveCart();
             updateCart();
             
-            // Reset button
             btnConfirm.disabled = false;
             btnConfirm.textContent = 'Konfirmasi Pesanan';
             
@@ -422,7 +438,6 @@ function confirmOrder() {
         btnConfirm.textContent = 'Konfirmasi Pesanan';
     });
 }
-
 function filterCategory(categoryId) {
     const url = new URL(window.location.href);
     const searchParam = url.searchParams.get('search');

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use Illuminate\Http\Request;
@@ -14,178 +13,273 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $period = $request->get('period', '7days');
-
-        $endDate = Carbon::now();
-        $startDate = Carbon::now();
+        
+        // === INCOME DATA ===
+        $incomeData = collect();
         $subLabel = '';
-
-        if ($period == '7days') {
-            $startDate = Carbon::now()->subDays(6)->startOfDay();
-            $subLabel = 'Menampilkan data 7 hari terakhir (per hari)';
-        } elseif ($period == '30days') {
-            $startDate = Carbon::now()->subDays(29)->startOfDay();
-            $subLabel = 'Menampilkan data 30 hari terakhir (per hari)';
-        } elseif ($period == '12months') {
-            $startDate = Carbon::now()->subMonths(11)->startOfMonth();
-            $subLabel = 'Menampilkan data 12 bulan terakhir (per bulan)';
-        }
-        
         $dateRangeString = '';
-        if ($startDate->isSameYear($endDate)) {
-            if ($startDate->isSameMonth($endDate)) {
-                $dateRangeString = $startDate->format('j') . ' - ' . $endDate->format('j M Y');
-            } else {
-                $dateRangeString = $startDate->format('j M') . ' - ' . $endDate->format('j M Y');
+        
+        if ($period === '7days') {
+            // Data 7 hari terakhir
+            for ($i = 6; $i >= 0; $i--) {
+                $date = Carbon::now()->subDays($i)->startOfDay();
+                $total = Transaction::whereDate('created_at', $date)->sum('total');
+                
+                $incomeData->push([
+                    'label' => $date->format('d M'),
+                    'date' => $date->format('Y-m-d'),
+                    'total' => (float) $total
+                ]);
             }
+            
+            $subLabel = '7 Hari Terakhir';
+            $dateRangeString = Carbon::now()->subDays(6)->format('d M Y') . ' - ' . Carbon::now()->format('d M Y');
+            
+        } elseif ($period === '30days') {
+            // Data 30 hari terakhir
+            for ($i = 29; $i >= 0; $i--) {
+                $date = Carbon::now()->subDays($i)->startOfDay();
+                $total = Transaction::whereDate('created_at', $date)->sum('total');
+                
+                $incomeData->push([
+                    'label' => $date->format('d M'),
+                    'date' => $date->format('Y-m-d'),
+                    'total' => (float) $total
+                ]);
+            }
+            
+            $subLabel = '30 Hari Terakhir';
+            $dateRangeString = Carbon::now()->subDays(29)->format('d M Y') . ' - ' . Carbon::now()->format('d M Y');
+            
+        } elseif ($period === '12months') {
+            // Data 12 bulan terakhir
+            for ($i = 11; $i >= 0; $i--) {
+                $date = Carbon::now()->subMonths($i)->startOfMonth();
+                $endDate = Carbon::now()->subMonths($i)->endOfMonth();
+                
+                $total = Transaction::whereBetween('created_at', [$date, $endDate])->sum('total');
+                
+                $incomeData->push([
+                    'label' => $date->format('M Y'),
+                    'month' => $date->format('Y-m'),
+                    'total' => (float) $total
+                ]);
+            }
+            
+            $subLabel = '12 Bulan Terakhir';
+            $dateRangeString = Carbon::now()->subMonths(11)->format('M Y') . ' - ' . Carbon::now()->format('M Y');
+            
+        } elseif ($period === 'custom') {
+            // Custom filter berdasarkan tahun dan bulan
+            $year = (int) $request->get('year', date('Y'));
+            $month = (int) $request->get('month', date('n'));
+            
+            // Hitung jumlah hari dalam bulan
+            $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+            
+            // Generate data per hari dalam bulan
+            for ($day = 1; $day <= $daysInMonth; $day++) {
+                $date = Carbon::create($year, $month, $day)->startOfDay();
+                $total = Transaction::whereDate('created_at', $date)->sum('total');
+                
+                $incomeData->push([
+                    'label' => $day,
+                    'date' => $date->format('Y-m-d'),
+                    'total' => (float) $total
+                ]);
+            }
+            
+            // Format label dan range tanggal
+            $monthNames = [
+                1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+            ];
+            
+            $subLabel = 'Data Harian ' . $monthNames[$month] . ' ' . $year;
+            $startDate = Carbon::create($year, $month, 1);
+            $endDate = Carbon::create($year, $month, $daysInMonth);
+            $dateRangeString = $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y');
+        }
+        
+        // === STATISTICS ===
+        // Hitung statistik berdasarkan periode filter
+        if ($period === 'custom') {
+            $year = (int) $request->get('year', date('Y'));
+            $month = (int) $request->get('month', date('n'));
+            $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+            $startDate = Carbon::create($year, $month, 1)->startOfDay();
+            $endDate = Carbon::create($year, $month, $daysInMonth)->endOfDay();
+            
+            $totalIncome = Transaction::whereBetween('created_at', [$startDate, $endDate])->sum('total');
+            $totalProductsSold = TransactionItem::whereHas('transaction', function($q) use ($startDate, $endDate) {
+                $q->whereBetween('created_at', [$startDate, $endDate]);
+            })->sum('quantity');
+            $totalOrders = Transaction::whereBetween('created_at', [$startDate, $endDate])->count();
+            
+        } elseif ($period === '7days') {
+            $startDate = Carbon::now()->subDays(6)->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
+            
+            $totalIncome = Transaction::whereBetween('created_at', [$startDate, $endDate])->sum('total');
+            $totalProductsSold = TransactionItem::whereHas('transaction', function($q) use ($startDate, $endDate) {
+                $q->whereBetween('created_at', [$startDate, $endDate]);
+            })->sum('quantity');
+            $totalOrders = Transaction::whereBetween('created_at', [$startDate, $endDate])->count();
+            
+        } elseif ($period === '30days') {
+            $startDate = Carbon::now()->subDays(29)->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
+            
+            $totalIncome = Transaction::whereBetween('created_at', [$startDate, $endDate])->sum('total');
+            $totalProductsSold = TransactionItem::whereHas('transaction', function($q) use ($startDate, $endDate) {
+                $q->whereBetween('created_at', [$startDate, $endDate]);
+            })->sum('quantity');
+            $totalOrders = Transaction::whereBetween('created_at', [$startDate, $endDate])->count();
+            
+        } elseif ($period === '12months') {
+            $startDate = Carbon::now()->subMonths(11)->startOfMonth();
+            $endDate = Carbon::now()->endOfMonth();
+            
+            $totalIncome = Transaction::whereBetween('created_at', [$startDate, $endDate])->sum('total');
+            $totalProductsSold = TransactionItem::whereHas('transaction', function($q) use ($startDate, $endDate) {
+                $q->whereBetween('created_at', [$startDate, $endDate]);
+            })->sum('quantity');
+            $totalOrders = Transaction::whereBetween('created_at', [$startDate, $endDate])->count();
+            
         } else {
-            $dateRangeString = $startDate->format('j M Y') . ' - ' . $endDate->format('j M Y');
+            // Default: all time
+            $totalIncome = Transaction::sum('total');
+            $totalProductsSold = TransactionItem::sum('quantity');
+            $totalOrders = Transaction::count();
         }
-
-        $totalIncome = Transaction::whereBetween('created_at', [$startDate, $endDate])->sum('total') ?? 0;
         
-        // --- INI BAGIAN YANG DIUBAH ---
-        // Menghitung jumlah semua item yang terjual berdasarkan rentang tanggal
-        $totalProductsSold = TransactionItem::join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
-            ->whereBetween('transactions.created_at', [$startDate, $endDate])
-            ->sum('transaction_items.quantity');
-        $totalProductsSold = $totalProductsSold ?? 0; // Pastikan 0 jika null
-        // --- BATAS PERUBAHAN ---
-
-        $totalOrders = Transaction::whereBetween('created_at', [$startDate, $endDate])->count();
-
-        $incomeData = $this->getIncomeByPeriod($period);
-
-        $topProducts = TransactionItem::select(
-            'products.name',
-            'products.id',
-            DB::raw('SUM(transaction_items.quantity) as total_quantity'),
-            DB::raw('SUM(transaction_items.subtotal) as total_sales')
-        )
-        ->join('products', 'transaction_items.product_id', '=', 'products.id')
-        ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
-        ->whereBetween('transactions.created_at', [$startDate, $endDate])
-        ->groupBy('products.id', 'products.name')
-        ->orderBy('total_quantity', 'desc')
-        ->limit(10) 
-        ->get();
-
+        // === TOP PRODUCTS ===
+        // Top 10 produk terlaris berdasarkan periode
+        if ($period === 'custom') {
+            $year = (int) $request->get('year', date('Y'));
+            $month = (int) $request->get('month', date('n'));
+            $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+            $startDate = Carbon::create($year, $month, 1)->startOfDay();
+            $endDate = Carbon::create($year, $month, $daysInMonth)->endOfDay();
+            
+            $topProducts = TransactionItem::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+                ->whereHas('transaction', function($q) use ($startDate, $endDate) {
+                    $q->whereBetween('created_at', [$startDate, $endDate]);
+                })
+                ->groupBy('product_id')
+                ->orderBy('total_quantity', 'desc')
+                ->limit(10)
+                ->with('product')
+                ->get()
+                ->map(function($item) {
+                    return [
+                        'name' => $item->product->name,
+                        'total_quantity' => $item->total_quantity
+                    ];
+                });
+                
+        } elseif ($period === '7days') {
+            $startDate = Carbon::now()->subDays(6)->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
+            
+            $topProducts = TransactionItem::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+                ->whereHas('transaction', function($q) use ($startDate, $endDate) {
+                    $q->whereBetween('created_at', [$startDate, $endDate]);
+                })
+                ->groupBy('product_id')
+                ->orderBy('total_quantity', 'desc')
+                ->limit(10)
+                ->with('product')
+                ->get()
+                ->map(function($item) {
+                    return [
+                        'name' => $item->product->name,
+                        'total_quantity' => $item->total_quantity
+                    ];
+                });
+                
+        } elseif ($period === '30days') {
+            $startDate = Carbon::now()->subDays(29)->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
+            
+            $topProducts = TransactionItem::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+                ->whereHas('transaction', function($q) use ($startDate, $endDate) {
+                    $q->whereBetween('created_at', [$startDate, $endDate]);
+                })
+                ->groupBy('product_id')
+                ->orderBy('total_quantity', 'desc')
+                ->limit(10)
+                ->with('product')
+                ->get()
+                ->map(function($item) {
+                    return [
+                        'name' => $item->product->name,
+                        'total_quantity' => $item->total_quantity
+                    ];
+                });
+                
+        } elseif ($period === '12months') {
+            $startDate = Carbon::now()->subMonths(11)->startOfMonth();
+            $endDate = Carbon::now()->endOfMonth();
+            
+            $topProducts = TransactionItem::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+                ->whereHas('transaction', function($q) use ($startDate, $endDate) {
+                    $q->whereBetween('created_at', [$startDate, $endDate]);
+                })
+                ->groupBy('product_id')
+                ->orderBy('total_quantity', 'desc')
+                ->limit(10)
+                ->with('product')
+                ->get()
+                ->map(function($item) {
+                    return [
+                        'name' => $item->product->name,
+                        'total_quantity' => $item->total_quantity
+                    ];
+                });
+                
+        } else {
+            // All time
+            $topProducts = TransactionItem::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+                ->groupBy('product_id')
+                ->orderBy('total_quantity', 'desc')
+                ->limit(10)
+                ->with('product')
+                ->get()
+                ->map(function($item) {
+                    return [
+                        'name' => $item->product->name,
+                        'total_quantity' => $item->total_quantity
+                    ];
+                });
+        }
         
-        // ==========================================================
-        // ===== PERUBAHAN YANG DIPERLUKAN ADA DI BARIS DI BAWAH INI =====
-        // ==========================================================
-        $recentTransactions = Transaction::with('user')
+        // === RECENT TRANSACTIONS ===
+        $recentTransactions = Transaction::with(['user', 'items.product'])
             ->orderBy('created_at', 'desc')
-            ->simplePaginate(10); // <-- Diubah dari limit(10)->get()
-
-        return view('dashboard', [
-            'totalIncome' => $totalIncome,
-            'totalProductsSold' => $totalProductsSold, // <-- Variabel diganti
-            'totalOrders' => $totalOrders,
-            'incomeData' => $incomeData,
-            'topProducts' => $topProducts,
-            'recentTransactions' => $recentTransactions,
-            'period' => $period,
-            'subLabel' => $subLabel,
-            'dateRangeString' => $dateRangeString
-        ]);
+            ->paginate(10);
+        
+        return view('dashboard', compact(
+            'incomeData',
+            'totalIncome',
+            'totalProductsSold',
+            'totalOrders',
+            'topProducts',
+            'recentTransactions',
+            'period',
+            'subLabel',
+            'dateRangeString'
+        ));
     }
-
-    private function getIncomeByPeriod($period)
+    
+    /**
+     * Get transaction details (untuk modal print)
+     */
+    public function getTransactionDetails($id)
     {
-        // ... (Fungsi ini tidak berubah, biarkan apa adanya)
-        switch ($period) {
-            case '7days':
-                $transactions = Transaction::select(
-                    DB::raw('DATE(created_at) as date'),
-                    DB::raw('SUM(total) as total')
-                )
-                ->where('created_at', '>=', now()->subDays(6)->startOfDay())
-                ->groupBy('date')
-                ->get()
-                ->keyBy('date');
-
-                $result = collect();
-                $days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-                
-                for ($i = 6; $i >= 0; $i--) {
-                    $date = now()->subDays($i);
-                    $dateStr = $date->format('Y-m-d');
-                    $dayName = $days[$date->dayOfWeek];
-                    
-                    $result->push((object)[
-                        'label' => $dayName . ', ' . $date->format('d'),
-                        'date' => $dateStr,
-                        'total' => $transactions->has($dateStr) ? $transactions[$dateStr]->total : 0
-                    ]);
-                }
-                
-                return $result;
-
-            case '30days':
-                $transactions = Transaction::select(
-                    DB::raw('DATE(created_at) as date'),
-                    DB::raw('SUM(total) as total')
-                )
-                ->where('created_at', '>=', now()->subDays(29)->startOfDay())
-                ->groupBy('date')
-                ->get()
-                ->keyBy('date');
-
-                $result = collect();
-                
-                for ($i = 29; $i >= 0; $i--) {
-                    $date = now()->subDays($i);
-                    $dateStr = $date->format('Y-m-d');
-                    
-                    $result->push((object)[
-                        'label' => $date->format('d'),
-                        'date' => $dateStr,
-                        'total' => $transactions->has($dateStr) ? $transactions[$dateStr]->total : 0
-                    ]);
-                }
-                
-                return $result;
-
-            case '12months':
-                $transactions = Transaction::select(
-                    DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
-                    DB::raw('SUM(total) as total')
-                )
-                ->where('created_at', '>=', now()->subMonths(11)->startOfMonth())
-                ->groupBy('month')
-                ->get()
-                ->keyBy('month');
-
-                $result = collect();
-                Carbon::setLocale('id');
-                
-                for ($i = 11; $i >= 0; $i--) {
-                    $date = now()->subMonths($i);
-                    $monthStr = $date->format('Y-m');
-                    $monthName = $date->translatedFormat('M');
-                    
-                    $result->push((object)[
-                        'label' => $monthName,
-                        'month' => $monthStr,
-                        'total' => $transactions->has($monthStr) ? $transactions[$monthStr]->total : 0
-                    ]);
-                }
-                
-                return $result;
-
-            default:
-                return collect();
-        }
-    }
-
-    // --- FUNGSI BARU UNTUK MODAL DETAIL ---
-    public function getTransactionDetails(Transaction $transaction)
-    {
-        // Ambil data transaksi beserta relasi 'user' (kasir) 
-        // dan 'items' (barang) beserta relasi 'product' (nama produk)
-        $transaction->load('user', 'items.product');
-
-        // Kembalikan sebagai JSON
+        $transaction = Transaction::with(['user', 'items.product'])->findOrFail($id);
+        
         return response()->json($transaction);
     }
 }

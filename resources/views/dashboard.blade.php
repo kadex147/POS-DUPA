@@ -60,7 +60,7 @@
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
                 <h3 class="text-base lg:text-lg font-semibold text-gray-800">Pendapatan</h3>
                 
-                <div class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-2 w-full sm:w-auto">
                     <a href="{{ route('dashboard', ['period' => '7days']) }}" 
                        class="px-3 py-1 text-xs lg:text-sm rounded {{ $period === '7days' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }} transition">
                         7 Hari
@@ -73,7 +73,59 @@
                        class="px-3 py-1 text-xs lg:text-sm rounded {{ $period === '12months' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }} transition">
                         12 Bulan
                     </a>
+                    <button onclick="toggleCustomFilter()" 
+                            class="px-3 py-1 text-xs lg:text-sm rounded {{ $period === 'custom' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }} transition">
+                        Custom
+                    </button>
                 </div>
+            </div>
+
+            <!-- Custom Filter Form -->
+            <div id="customFilterForm" class="mb-4 {{ $period === 'custom' ? '' : 'hidden' }}">
+                <form method="GET" action="{{ route('dashboard') }}" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <input type="hidden" name="period" value="custom">
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                        <!-- Pilih Tahun -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Tahun</label>
+                            <select name="year" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500 text-sm" required>
+                                @php
+                                    $currentYear = date('Y');
+                                    $selectedYear = request('year', $currentYear);
+                                    
+                                    // Ambil tahun tertua dari database (hanya tahun yang ada datanya)
+                                    $oldestYear = \App\Models\Transaction::min(\DB::raw('YEAR(created_at)')) ?? $currentYear;
+                                @endphp
+                                @for($y = $currentYear; $y >= $oldestYear; $y--)
+                                    <option value="{{ $y }}" {{ $selectedYear == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                @endfor
+                            </select>
+                        </div>
+
+                        <!-- Pilih Bulan -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Bulan</label>
+                            <select name="month" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500 text-sm" required>
+                                @php
+                                    $months = [
+                                        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                                        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                                        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                                    ];
+                                    $selectedMonth = request('month', date('n'));
+                                @endphp
+                                @foreach($months as $num => $name)
+                                    <option value="{{ $num }}" {{ $selectedMonth == $num ? 'selected' : '' }}>{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm font-medium">
+                        Tampilkan Data
+                    </button>
+                </form>
             </div>
 
             <div class="h-62 lg:h-100"> 
@@ -201,18 +253,23 @@
     </div>
 </div>
 
-{{-- Include Print Component --}}
-@include('components.print-receipt-modal')
+{{-- Include Modal Print Component --}}
+@include('components.modal-print')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script>
+    // Toggle Custom Filter Form
+    function toggleCustomFilter() {
+        const form = document.getElementById('customFilterForm');
+        form.classList.toggle('hidden');
+    }
+
     // Fungsi untuk menampilkan detail transaksi
     function showTransactionDetails(event, transactionId) {
         event.preventDefault();
         fetch(`/transaction-details/${transactionId}`)
             .then(response => response.json())
             .then(data => {
-                // Gunakan fungsi global dari component
                 window.openPrintModal(data);
             })
             .catch(error => {
@@ -269,6 +326,7 @@
                             const index = context[0].dataIndex;
                             const item = incomeData[index];
                             if (!item) return '';
+                            
                             if (currentPeriod === '7days' || currentPeriod === '30days') {
                                 const parts = item.date.split('-');
                                 const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
@@ -278,6 +336,11 @@
                                 const parts = item.month.split('-');
                                 const dateObj = new Date(parts[0], parts[1] - 1, 1);
                                 return new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(dateObj);
+                            }
+                            if (currentPeriod === 'custom') {
+                                const parts = item.date.split('-');
+                                const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+                                return new Intl.DateTimeFormat('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(dateObj);
                             }
                             return context[0].label;
                         },
@@ -386,6 +449,11 @@
             }
         });
     }
+
+    // Show custom filter if period is custom
+    @if($period === 'custom')
+        document.getElementById('customFilterForm').classList.remove('hidden');
+    @endif
 </script>
 
 @endsection
