@@ -15,7 +15,7 @@
   "env": {
     "APP_ENV": "production",
     "APP_DEBUG": "true",
-    "APP_URL": "",
+    "APP_URL": "https://pos-dupa-9m5l.vercel.app/login",
     "APP_KEY": "base64:qFEwii1Q3XY3gkUg0nTnLkJM2g1fdsusyYs1+Cnwlys=",
     "DB_CONNECTION": "mariadb",
     "DB_HOST": "v13i4v.h.filess.io",
