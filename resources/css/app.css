@@ -269,3 +269,444 @@ button {
 .slide-in {
     animation: slideIn 0.3s ease-in-out;
 }
+
+/* ========================================
+   SOFT UI IMPROVEMENTS - MODERN DESIGN
+   ======================================== */
+
+/* Soft Card dengan shadow yang lebih natural */
+.soft-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.soft-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Soft Button dengan rounded lebih besar */
+.btn-soft {
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.btn-soft:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-soft:active {
+    transform: translateY(0);
+}
+
+/* Soft Input dengan focus effect yang smooth */
+.input-soft {
+    border-radius: 12px;
+    border: 2px solid #e5e7eb;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+/* Override padding-left jika ada utility class pl-* dari Tailwind */
+.input-soft.pl-16,
+input.input-soft[class*="pl-"] {
+    padding-left: 4rem !important; /* 64px - force override */
+}
+
+.input-soft:focus {
+    border-color: #9ca3af;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(156, 163, 175, 0.08);
+    transform: translateY(-1px);
+}
+
+/* Soft Badge dengan rounded penuh */
+.badge-soft {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+}
+
+.badge-success {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+}
+
+.badge-danger {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+}
+
+.badge-warning {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+}
+
+.badge-primary {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+}
+
+/* Soft Table dengan hover effect */
+.table-soft {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.table-soft thead {
+    background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
+}
+
+.table-soft tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table-soft tbody tr:hover {
+    background: #f9fafb;
+    transform: scale(1.005);
+}
+
+/* Soft Modal dengan backdrop blur */
+.modal-soft {
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content-soft {
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    animation: modalSlideUp 0.3s ease-out;
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Soft Sidebar dengan shadow subtle */
+.sidebar-soft {
+    background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-soft nav a {
+    border-radius: 10px;
+    margin: 0 12px;
+    padding: 12px 16px;
+    transition: all 0.2s ease;
+}
+
+.sidebar-soft nav a:hover:not(.active) {
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    transform: translateX(4px);
+}
+
+.sidebar-soft nav a.active {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(107, 114, 128, 0.25);
+}
+
+.sidebar-soft nav a.active:hover {
+    background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+    transform: translateX(2px);
+}
+
+/* Soft Product Card untuk POS */
+.product-card-soft {
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    background: white;
+}
+
+.product-card-soft:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+}
+
+.product-card-soft .product-image {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+}
+
+.product-card-soft .product-image img {
+    transition: transform 0.3s ease;
+}
+
+.product-card-soft:hover .product-image img {
+    transform: scale(1.1);
+}
+
+.product-card-soft .add-button {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    transition: all 0.2s ease;
+}
+
+.product-card-soft .add-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.5);
+}
+
+/* Soft Cart Item */
+.cart-item-soft {
+    background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+    border-radius: 14px;
+    padding: 12px;
+    transition: all 0.2s ease;
+}
+
+.cart-item-soft:hover {
+    background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
+    transform: translateX(-2px);
+}
+
+/* Soft Stats Card untuk Dashboard */
+.stats-card-soft {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card-soft::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.stats-card-soft:hover::before {
+    opacity: 1;
+}
+
+.stats-card-soft:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+}
+
+/* Soft Pagination */
+.pagination-soft button,
+.pagination-soft a {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.pagination-soft button:hover:not(:disabled),
+.pagination-soft a:hover {
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    transform: scale(1.1);
+}
+
+.pagination-soft .current-page {
+    background: linear-gradient(135deg, #666666 0%, #646464 100%);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+}
+
+/* Soft Alert Messages */
+.alert-soft {
+    border-radius: 14px;
+    padding: 16px 20px;
+    border: 1px solid transparent;
+    animation: slideInDown 0.4s ease-out;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-success-soft {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    border-color: #6ee7b7;
+    color: #065f46;
+}
+
+.alert-error-soft {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-color: #fca5a5;
+    color: #991b1b;
+}
+
+/* Soft Search Input */
+.search-soft {
+    position: relative;
+}
+
+.search-soft input {
+    border-radius: 14px;
+    padding-left: 44px;
+    padding-right: 16px;
+    height: 48px;
+    border: 2px solid #e5e7eb;
+    background: #fafafa;
+    transition: all 0.3s ease;
+}
+
+.search-soft input:focus {
+    border-color: #9ca3af;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(156, 163, 175, 0.08);
+    outline: none;
+}
+
+.search-soft .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    transition: color 0.3s ease;
+    pointer-events: none;
+}
+
+.search-soft input:focus ~ .search-icon {
+    color: #6b7280;
+}
+
+/* Soft Category Tabs */
+.category-tabs-soft {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+}
+
+.category-tabs-soft button {
+    padding: 10px 20px;
+    border-radius: 12px;
+    white-space: nowrap;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.category-tabs-soft button:not(.active) {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.category-tabs-soft button:not(.active):hover {
+    background: #e5e7eb;
+    border-color: #d1d5db;
+}
+
+.category-tabs-soft button.active {
+    background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(55, 65, 81, 0.3);
+}
+
+/* Smooth Scrollbar untuk semua elemen */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Soft Loading State */
+.loading-soft {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading-soft::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(2px);
+    border-radius: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+    .soft-card {
+        border-radius: 12px;
+    }
+    
+    .btn-soft {
+        border-radius: 10px;
+        padding: 10px 20px;
+    }
+    
+    .input-soft {
+        border-radius: 10px;
+        padding: 10px 14px;
+    }
+    
+    .stats-card-soft {
+        padding: 16px;
+    }
+}
