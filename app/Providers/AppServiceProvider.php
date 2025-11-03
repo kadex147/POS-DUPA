@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL; // <--- BARIS YANG DITAMBAHKAN
 
 class AppServiceProvider extends ServiceProvider
 {
+    // ...
     /**
      * Register any application services.
      */
