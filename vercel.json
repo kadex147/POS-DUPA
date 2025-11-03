@@ -8,21 +8,54 @@
   },
   "routes": [
     {
+      "src": "/build/(.*)",
+      "dest": "/public/build/$1"
+    },
+    {
+      "src": "/css/(.*)",
+      "dest": "/public/css/$1"
+    },
+    {
+      "src": "/js/(.*)",
+      "dest": "/public/js/$1"
+    },
+    {
+      "src": "/images/(.*)",
+      "dest": "/public/images/$1"
+    },
+    {
+      "src": "/storage/(.*)",
+      "dest": "/public/storage/$1"
+    },
+    {
+      "src": "/(.*\\.(png|jpg|jpeg|gif|svg|ico|webp|css|js))",
+      "dest": "/public/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/api/index.php"
     }
   ],
   "env": {
     "APP_ENV": "production",
-    "APP_DEBUG": "true",
-    "APP_URL": "https://pos-dupa-9m5l.vercel.app/login",
+    "APP_DEBUG": "false",
+    "APP_URL": "https://pos-dupa-9m5l.vercel.app",
+    "ASSET_URL": "https://pos-dupa-9m5l.vercel.app",
     "APP_KEY": "base64:qFEwii1Q3XY3gkUg0nTnLkJM2g1fdsusyYs1+Cnwlys=",
+    
     "DB_CONNECTION": "mariadb",
     "DB_HOST": "v13i4v.h.filess.io",
     "DB_PORT": "61000",
     "DB_DATABASE": "posdupa_duebusway",
     "DB_USERNAME": "posdupa_duebusway",
     "DB_PASSWORD": "2ba14632da25aea9e18c4443a848d68574b0ecdd",
+    
+    "SESSION_DRIVER": "database",
+    "SESSION_LIFETIME": "120",
+    "SESSION_ENCRYPT": "false",
+    
+    "CACHE_DRIVER": "database",
+    "QUEUE_CONNECTION": "database",
     
     "APP_CONFIG_CACHE": "/tmp/config.php",
     "APP_EVENTS_CACHE": "/tmp/events.php",
@@ -31,8 +64,6 @@
     "APP_SERVICES_CACHE": "/tmp/services.php",
     "VIEW_COMPILED_PATH": "/tmp",
     
-    "CACHE_DRIVER": "array",
-    "LOG_CHANNEL": "stderr",
-    "SESSION_DRIVER": "cookie"
+    "LOG_CHANNEL": "stderr"
   }
 }

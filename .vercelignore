@@ -1,14 +1,9 @@
-# .vercelignore
-
-# 1. Folder PHP Dependencies
 /vendor
-
-# 2. Folder Node Dependencies
 /node_modules
-
-# 3. Folder yang dibuat selama development
 .env
 .idea
 .vscode
 .git
 .gitignore
+/tests
+/storage/logs/*
