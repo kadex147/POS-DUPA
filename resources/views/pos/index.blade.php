@@ -186,7 +186,7 @@
         <div class="border-t border-gray-200 pt-4 mb-4">
             <div class="flex justify-between font-bold text-base lg:text-lg">
                 <span class="text-gray-700">Total:</span>
-                <span id="modalTotal" class="text-orange-600">Rp 0</span>
+                <span id="modalTotal" class="text-green-600">Rp 0</span>
             </div>
         </div>
         

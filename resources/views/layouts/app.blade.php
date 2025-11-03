@@ -31,13 +31,13 @@
                     <div class="absolute inset-0 bg-gradient-to-br from-gray-400/20 to-gray-600/20 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
                     <img src="{{ asset('storage/images/logo.png') }}" 
                          alt="Logo" 
-                         class="relative w-16 h-16 object-contain rounded-2xl shadow-lg transition-transform duration-300 group-hover:scale-105"
+                         class="relative w-20 h-20 lg:w-24 lg:h-24 object-contain rounded-2xl shadow-lg transition-transform duration-300 group-hover:scale-105"
                          onerror="this.onerror=null; this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';">
                     
                     <!-- Fallback Logo jika gambar tidak ada -->
                     <div id="logo-fallback" 
-                         class="hidden relative w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-800 rounded-2xl items-center justify-center shadow-lg">
-                        <svg class="w-9 h-9 text-white" fill="currentColor" viewBox="0 0 24 24">
+                         class="hidden relative w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-gray-600 to-gray-800 rounded-2xl items-center justify-center shadow-lg">
+                        <svg class="w-10 h-10 lg:w-12 lg:h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                         </svg>
                     </div>
