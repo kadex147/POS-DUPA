@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "framework": null,
+  "functions": {
+    "api/index.php": { 
+      "runtime": "vercel-php@0.7.4" 
+    }
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.php"
+    }
+  ],
+  "env": {
+    "APP_ENV": "production",
+    "APP_DEBUG": "true",
+    "APP_URL": "",
+    "APP_KEY": "base64:qFEwii1Q3XY3gkUg0nTnLkJM2g1fdsusyYs1+Cnwlys=",
+    "DB_CONNECTION": "mariadb",
+    "DB_HOST": "v13i4v.h.filess.io",
+    "DB_PORT": "61000",
+    "DB_DATABASE": "posdupa_duebusway",
+    "DB_USERNAME": "posdupa_duebusway",
+    "DB_PASSWORD": "2ba14632da25aea9e18c4443a848d68574b0ecdd",
+    
+    "APP_CONFIG_CACHE": "/tmp/config.php",
+    "APP_EVENTS_CACHE": "/tmp/events.php",
+    "APP_PACKAGES_CACHE": "/tmp/packages.php",
+    "APP_ROUTES_CACHE": "/tmp/routes.php",
+    "APP_SERVICES_CACHE": "/tmp/services.php",
+    "VIEW_COMPILED_PATH": "/tmp",
+    
+    "CACHE_DRIVER": "array",
+    "LOG_CHANNEL": "stderr",
+    "SESSION_DRIVER": "cookie"
+  }
+}
