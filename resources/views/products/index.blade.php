@@ -60,16 +60,10 @@
                            class="btn-soft px-4 py-2 bg-gray-600 text-white hover:bg-gray-700 text-sm font-medium">
                             Edit
                         </a>
-                        <form action="{{ route('products.destroy', $product->id) }}" 
-                              method="POST" 
-                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus produk ini?');"
-                              class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-soft px-4 py-2 bg-red-500 text-white hover:bg-red-600 text-sm font-medium">
-                                Hapus
-                            </button>
-                        </form>
+                        <button onclick="openDeleteModal({{ $product->id }}, '{{ addslashes($product->name) }}')" 
+                                class="btn-soft px-4 py-2 bg-red-500 text-white hover:bg-red-600 text-sm font-medium">
+                            Hapus
+                        </button>
                     </div>
                 </div>
             </div>
@@ -84,7 +78,7 @@
         @endforelse
     </div>
 
-    <!-- Desktop: Table View (Layout Asli) -->
+    <!-- Desktop: Table View -->
     <div class="hidden lg:block soft-card overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
@@ -126,18 +120,12 @@
                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                                     </svg>
                                 </a>
-                                <form action="{{ route('products.destroy', $product->id) }}" 
-                                      method="POST" 
-                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus produk ini?');"
-                                      class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </button>
-                                </form>
+                                <button onclick="openDeleteModal({{ $product->id }}, '{{ addslashes($product->name) }}')" 
+                                        class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -156,7 +144,7 @@
         </div>
     </div>
 
-    <!-- Pagination dengan Soft Design -->
+    <!-- Pagination -->
     @if($products->hasPages())
     <div class="pagination-soft soft-card p-4">
         <div class="flex items-center justify-center gap-3">
@@ -193,4 +181,86 @@
     </div>
     @endif
 </div>
+
+<!-- Modal Konfirmasi Hapus Produk -->
+<div id="deleteModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-300">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md relative transform transition-all duration-300 scale-95 opacity-0" id="deleteModalContent">
+        <!-- Icon Warning -->
+        <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center">
+                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Title & Description -->
+        <h3 class="text-xl font-bold text-center text-gray-800 mb-2">Hapus Produk?</h3>
+        <p class="text-center text-gray-600 text-sm mb-1">Anda yakin ingin menghapus produk:</p>
+        <p class="text-center font-bold text-gray-800 mb-6" id="productName"></p>
+        
+        <!-- Action Buttons -->
+        <div class="flex gap-3">
+            <button onclick="closeDeleteModal()" 
+                    class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-200 active:scale-95">
+                Batal
+            </button>
+            <form id="deleteForm" method="POST" class="flex-1">
+                @csrf
+                @method('DELETE')
+                <button type="submit" 
+                        class="w-full py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 active:scale-95 shadow-lg">
+                    Ya, Hapus
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+function openDeleteModal(productId, productName) {
+    const modal = document.getElementById('deleteModal');
+    const modalContent = document.getElementById('deleteModalContent');
+    const form = document.getElementById('deleteForm');
+    const nameElement = document.getElementById('productName');
+    
+    // Set form action
+    form.action = `/products/${productId}`;
+    
+    // Set product name
+    nameElement.textContent = productName;
+    
+    // Show modal
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Trigger animation
+    setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteModal');
+    const modalContent = document.getElementById('deleteModalContent');
+    
+    modalContent.classList.remove('scale-100', 'opacity-100');
+    modalContent.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }, 300);
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeDeleteModal();
+    }
+});
+</script>
+@endpush
 @endsection

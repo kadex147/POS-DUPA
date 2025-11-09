@@ -139,7 +139,7 @@
 
         <!-- Top Products Chart -->
         <div class="soft-card">
-            <div class="p-4 lg:p-6">
+            <div class="p-4 lg:p-8">
                 <h3 class="text-base lg:text-lg font-bold text-gray-800 mb-4">Produk Terlaris</h3>
                 <div class="h-80 lg:h-96"> 
                     @if($topProducts->isEmpty())
@@ -443,7 +443,7 @@
                             display: true,
                             text: '10 Produk Terlaris',
                             padding: 10,
-                            font: { size: 14, weight: 'bold' }
+                            font: { size: 12, weight: 'bold' }
                         }
                     },
                     tooltip: {

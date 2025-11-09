@@ -37,7 +37,7 @@
         <div id="productsGrid" class="flex-1 overflow-y-auto px-4 lg:px-6 pb-4">
            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-5 gap-3 lg:gap-4 auto-rows-max">
                 @forelse($products as $product)
-                <div class="product-card-soft">
+                <div class="product-card-soft cursor-pointer" onclick='addToCart(@json($product))'>
                     <div class="product-image">
                         @if($product->image)
                             <img src="{{ asset('storage/' . $product->image) }}" 
@@ -49,7 +49,7 @@
                             </svg>
                         @endif
                         
-                        <button onclick='addToCart(@json($product))' 
+                        <button onclick='event.stopPropagation(); addToCart(@json($product))' 
                                 class="add-button flex items-center justify-center hover:scale-110 active:scale-95 z-10">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
@@ -150,7 +150,7 @@
                 Pesan Sekarang
             </button>
             
-            <button onclick="clearCart()" 
+            <button onclick="openClearCartModal()" 
                     class="btn-soft w-full py-2.5 bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold text-sm lg:text-base">
                 Kosongkan Keranjang
             </button>
@@ -195,6 +195,36 @@
                 class="btn-soft w-full py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 font-bold text-sm lg:text-base shadow-lg">
             Konfirmasi Pesanan
         </button>
+    </div>
+</div>
+
+<!-- Modal Konfirmasi Kosongkan Keranjang dengan Soft Design -->
+<div id="clearCartModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-300">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md relative transform transition-all duration-300 scale-95 opacity-0" id="clearCartModalContent">
+        <!-- Icon Warning -->
+        <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center">
+                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Title & Description -->
+        <h3 class="text-xl font-bold text-center text-gray-800 mb-2">Kosongkan Keranjang?</h3>
+        <p class="text-center text-gray-600 text-sm mb-6">Semua produk dalam keranjang akan dihapus</p>
+        
+        <!-- Action Buttons -->
+        <div class="flex gap-3">
+            <button onclick="closeClearCartModal()" 
+                    class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-200 active:scale-95">
+                Batal
+            </button>
+            <button onclick="confirmClearCart()" 
+                    class="flex-1 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 active:scale-95 shadow-lg">
+                Ya, Kosongkan
+            </button>
+        </div>
     </div>
 </div>
 
@@ -352,11 +382,47 @@ function updateQuantity(index, quantity) {
 }
 
 function clearCart() {
-    if (cart.length > 0 && confirm('Yakin ingin mengosongkan keranjang?')) {
-        cart = [];
-        saveCart();
-        updateCart();
+    // Function ini tidak dipakai lagi, diganti dengan modal
+}
+
+function openClearCartModal() {
+    if (cart.length === 0) {
+        showToast('Keranjang sudah kosong');
+        return;
     }
+    
+    const modal = document.getElementById('clearCartModal');
+    const modalContent = document.getElementById('clearCartModalContent');
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Trigger animation
+    setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+function closeClearCartModal() {
+    const modal = document.getElementById('clearCartModal');
+    const modalContent = document.getElementById('clearCartModalContent');
+    
+    modalContent.classList.remove('scale-100', 'opacity-100');
+    modalContent.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }, 300);
+}
+
+function confirmClearCart() {
+    cart = [];
+    saveCart();
+    updateCart();
+    closeClearCartModal();
+    showToast('Keranjang berhasil dikosongkan');
 }
 
 function openOrderModal() {

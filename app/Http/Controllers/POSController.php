@@ -18,9 +18,9 @@ class POSController extends Controller
         $isMobile = $this->isMobileDevice($request);
         
         // Set limit berdasarkan device
-        $perPage = $isMobile ? 10 : 10;
+        $perPage = $isMobile ? 10 : 15;
         
-        $query = Product::with('category');
+        $query = Product::query();
         
         // Filter berdasarkan kategori jika ada
         if ($request->has('category') && $request->category != '') {
@@ -32,7 +32,26 @@ class POSController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
         
-        $products = $query->orderBy('name')->paginate($perPage);
+        // Join dengan transaction_items untuk menghitung total pesanan
+        // Urutkan berdasarkan total quantity yang pernah dipesan (DESC)
+        $query->leftJoin('transaction_items', 'products.id', '=', 'transaction_items.product_id')
+            ->select(
+                'products.*',
+                DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as total_ordered')
+            )
+            ->groupBy(
+                'products.id',
+                'products.category_id',
+                'products.name',
+                'products.price',
+                'products.image',
+                'products.created_at',
+                'products.updated_at'
+            )
+            ->orderBy('total_ordered', 'DESC')
+            ->orderBy('products.name', 'ASC');
+        
+        $products = $query->paginate($perPage);
         $categories = Category::orderBy('name')->get();
         
         return view('pos.index', compact('products', 'categories'));
