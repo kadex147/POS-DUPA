@@ -52,10 +52,20 @@
                 <div class="flex-1 min-w-0">
                     <h3 class="font-bold text-gray-800 text-base mb-1 truncate">{{ $product->name }}</h3>
                     <p class="badge-soft badge-primary text-xs mb-2 inline-block">{{ $product->category->name }}</p>
-                    <p class="text-base font-bold text-orange-600 mb-3">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                    <p class="text-base font-bold text-orange-600 mb-1">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                    <p class="text-sm mb-3">
+                        <span class="font-semibold text-gray-700">Stock:</span> 
+                        <span class="stock-value-{{ $product->id }} font-bold {{ $product->stock < 10 ? 'text-red-600' : 'text-green-600' }}">
+                            {{ $product->stock }}
+                        </span>
+                    </p>
                     
                     <!-- Actions -->
                     <div class="flex items-center gap-2">
+                        <button onclick="openStockModal({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->stock }})"
+                                class="btn-soft px-3 py-2 bg-blue-500 text-white hover:bg-blue-600 text-sm font-medium">
+                            Stock
+                        </button>
                         <a href="{{ route('products.edit', $product->id) }}" 
                            class="btn-soft px-4 py-2 bg-gray-600 text-white hover:bg-gray-700 text-sm font-medium">
                             Edit
@@ -87,7 +97,8 @@
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama Produk</th>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kategori</th>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Harga</th>
-                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Gambar Produk</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Stock</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Gambar</th>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
                     </tr>
                 </thead>
@@ -99,6 +110,20 @@
                             <span class="badge-soft badge-primary">{{ $product->category->name }}</span>
                         </td>
                         <td class="px-6 py-4 text-sm font-bold text-green-600">Rp {{ number_format($product->price, 0, ',', '.') }}</td>
+                        <td class="px-6 py-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="stock-value-{{ $product->id }} font-bold {{ $product->stock < 10 ? 'text-red-600' : 'text-green-600' }}">
+                                    {{ $product->stock }}
+                                </span>
+                                <button onclick="openStockModal({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->stock }})"
+                                        class="p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all"
+                                        title="Edit Stock">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
                         <td class="px-6 py-4">
                             @if($product->image)
                                 <img src="{{ asset('storage/' . $product->image) }}" 
@@ -115,13 +140,15 @@
                         <td class="px-6 py-4 text-sm">
                             <div class="flex items-center gap-2">
                                 <a href="{{ route('products.edit', $product->id) }}" 
-                                   class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all">
+                                   class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all"
+                                   title="Edit Produk">
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                                     </svg>
                                 </a>
                                 <button onclick="openDeleteModal({{ $product->id }}, '{{ addslashes($product->name) }}')" 
-                                        class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all">
+                                        class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all"
+                                        title="Hapus Produk">
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                     </svg>
@@ -131,7 +158,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-12 text-center">
+                        <td colspan="6" class="px-6 py-12 text-center">
                             <svg class="w-16 h-16 mx-auto text-gray-300 mb-3" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293z" clip-rule="evenodd"/>
                             </svg>
@@ -182,10 +209,47 @@
     @endif
 </div>
 
+<!-- Modal Edit Stock -->
+<div id="stockModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-300">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md relative transform transition-all duration-300 scale-95 opacity-0" id="stockModalContent">
+        <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+            </div>
+        </div>
+        
+        <h3 class="text-xl font-bold text-center text-gray-800 mb-2">Edit Stock</h3>
+        <p class="text-center text-gray-600 text-sm mb-1">Produk:</p>
+        <p class="text-center font-bold text-gray-800 mb-6" id="stockProductName"></p>
+        
+        <div class="mb-6">
+            <label for="stockInput" class="block text-sm font-semibold text-gray-700 mb-2">Jumlah Stock</label>
+            <input type="number" 
+                   id="stockInput" 
+                   min="0" 
+                   class="input-soft w-full text-center text-2xl font-bold"
+                   placeholder="0">
+        </div>
+        
+        <div class="flex gap-3">
+            <button onclick="closeStockModal()" 
+                    class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-200 active:scale-95">
+                Batal
+            </button>
+            <button onclick="updateStock()" 
+                    id="btnUpdateStock"
+                    class="flex-1 py-3 bg-gradient-to-r from-gray-600 to-gray-700 rounded-xl font-semibold text-white hover:from-gray-700 hover:to-gray-800 text-center text-sm lg:text-base font-semibold shadow-lg">
+                Simpan
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Konfirmasi Hapus Produk -->
 <div id="deleteModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-300">
     <div class="bg-white rounded-3xl p-6 w-full max-w-md relative transform transition-all duration-300 scale-95 opacity-0" id="deleteModalContent">
-        <!-- Icon Warning -->
         <div class="flex justify-center mb-4">
             <div class="w-16 h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center">
                 <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,12 +258,10 @@
             </div>
         </div>
         
-        <!-- Title & Description -->
         <h3 class="text-xl font-bold text-center text-gray-800 mb-2">Hapus Produk?</h3>
         <p class="text-center text-gray-600 text-sm mb-1">Anda yakin ingin menghapus produk:</p>
         <p class="text-center font-bold text-gray-800 mb-6" id="productName"></p>
         
-        <!-- Action Buttons -->
         <div class="flex gap-3">
             <button onclick="closeDeleteModal()" 
                     class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-200 active:scale-95">
@@ -219,23 +281,104 @@
 
 @push('scripts')
 <script>
+let currentProductId = null;
+
+function openStockModal(productId, productName, currentStock) {
+    currentProductId = productId;
+    const modal = document.getElementById('stockModal');
+    const modalContent = document.getElementById('stockModalContent');
+    const nameElement = document.getElementById('stockProductName');
+    const stockInput = document.getElementById('stockInput');
+    
+    nameElement.textContent = productName;
+    stockInput.value = currentStock;
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+        stockInput.focus();
+        stockInput.select();
+    }, 10);
+}
+
+function closeStockModal() {
+    const modal = document.getElementById('stockModal');
+    const modalContent = document.getElementById('stockModalContent');
+    
+    modalContent.classList.remove('scale-100', 'opacity-100');
+    modalContent.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        currentProductId = null;
+    }, 300);
+}
+
+function updateStock() {
+    const stockInput = document.getElementById('stockInput');
+    const newStock = parseInt(stockInput.value);
+    const btnUpdate = document.getElementById('btnUpdateStock');
+    
+    if (isNaN(newStock) || newStock < 0) {
+        alert('Jumlah stock tidak valid');
+        return;
+    }
+    
+    btnUpdate.disabled = true;
+    btnUpdate.textContent = 'Menyimpan...';
+    
+    fetch(`/products/${currentProductId}/update-stock`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ stock: newStock })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update stock display
+            const stockElements = document.querySelectorAll(`.stock-value-${currentProductId}`);
+            stockElements.forEach(el => {
+                el.textContent = data.stock;
+                el.classList.remove('text-red-600', 'text-green-600');
+                el.classList.add(data.stock < 10 ? 'text-red-600' : 'text-green-600');
+            });
+            
+            closeStockModal();
+            showToast('Stock berhasil diupdate');
+        } else {
+            alert('Gagal update stock: ' + data.message);
+        }
+        
+        btnUpdate.disabled = false;
+        btnUpdate.textContent = 'Simpan';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat update stock');
+        btnUpdate.disabled = false;
+        btnUpdate.textContent = 'Simpan';
+    });
+}
+
 function openDeleteModal(productId, productName) {
     const modal = document.getElementById('deleteModal');
     const modalContent = document.getElementById('deleteModalContent');
     const form = document.getElementById('deleteForm');
     const nameElement = document.getElementById('productName');
     
-    // Set form action
     form.action = `/products/${productId}`;
-    
-    // Set product name
     nameElement.textContent = productName;
     
-    // Show modal
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     
-    // Trigger animation
     setTimeout(() => {
         modalContent.classList.remove('scale-95', 'opacity-0');
         modalContent.classList.add('scale-100', 'opacity-100');
@@ -255,10 +398,29 @@ function closeDeleteModal() {
     }, 300);
 }
 
-// Close modal on Escape key
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50 animate-slideInDown';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 2000);
+}
+
+// Close modals on Escape key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
+        closeStockModal();
         closeDeleteModal();
+    }
+});
+
+// Handle Enter key in stock input
+document.getElementById('stockInput')?.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        updateStock();
     }
 });
 </script>

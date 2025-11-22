@@ -48,19 +48,33 @@
             </div>
         </div>
 
-    <div class="mb-4 lg:mb-6">
-            <label for="price_display" class="block text-sm font-semibold text-gray-600 mb-2">Harga</label>
-            <div class="relative">
-                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 font-bold text-base pointer-events-none z-10">Rp</span>
-                <input type="text" 
-                       id="price_display" 
-                       value="{{ old('price') ? number_format(old('price'), 0, ',', '.') : number_format($product->price, 0, ',', '.') }}"
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-4 lg:mb-6">
+            <div>
+                <label for="price_display" class="block text-sm font-semibold text-gray-600 mb-2">Harga</label>
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 font-bold text-base pointer-events-none z-10">Rp</span>
+                    <input type="text" 
+                           id="price_display" 
+                           value="{{ old('price') ? number_format(old('price'), 0, ',', '.') : number_format($product->price, 0, ',', '.') }}"
+                           class="input-soft w-full"
+                           style="padding-left: 3.5rem !important;"
+                           placeholder="0"
+                           oninput="formatRupiah(this)"
+                           required>
+                    <input type="hidden" id="price" name="price" value="{{ old('price', $product->price) }}">
+                </div>
+            </div>
+
+            <div>
+                <label for="stock" class="block text-sm font-semibold text-gray-700 mb-2">Stock</label>
+                <input type="number" 
+                       id="stock" 
+                       name="stock" 
+                       value="{{ old('stock', $product->stock) }}"
                        class="input-soft w-full"
-                       style="padding-left: 3.5rem !important;"
                        placeholder="0"
-                       oninput="formatRupiah(this)"
+                       min="0"
                        required>
-                <input type="hidden" id="price" name="price" value="{{ old('price', $product->price) }}">
             </div>
         </div>
 
@@ -172,21 +186,14 @@ function removeImage() {
 }
 
 function formatRupiah(input) {
-    // Hapus semua karakter non-digit
     let value = input.value.replace(/\D/g, '');
-    
-    // Set nilai asli ke hidden input
     document.getElementById('price').value = value;
-    
-    // Format dengan thousand separator
     if (value) {
         value = parseInt(value).toLocaleString('id-ID');
     }
-    
     input.value = value;
 }
 
-// Inisialisasi format rupiah saat halaman dimuat (untuk nilai yang sudah ada)
 document.addEventListener('DOMContentLoaded', function() {
     const priceDisplay = document.getElementById('price_display');
     if (priceDisplay.value) {

@@ -44,6 +44,7 @@ class POSController extends Controller
                 'products.category_id',
                 'products.name',
                 'products.price',
+                'products.stock',
                 'products.image',
                 'products.created_at',
                 'products.updated_at'
@@ -93,6 +94,14 @@ class POSController extends Controller
         try {
             DB::beginTransaction();
             
+            // Check stock availability for all items
+            foreach ($request->items as $item) {
+                $product = Product::find($item['product_id']);
+                if (!$product->isInStock($item['quantity'])) {
+                    throw new \Exception("Stock tidak cukup untuk produk: {$product->name}. Stock tersedia: {$product->stock}");
+                }
+            }
+            
             // Generate invoice number
             $lastTransaction = Transaction::whereDate('created_at', today())->latest()->first();
             $invoiceNumber = 'INV-' . date('Ymd') . '-' . str_pad(($lastTransaction ? $lastTransaction->id + 1 : 1), 4, '0', STR_PAD_LEFT);
@@ -104,7 +113,7 @@ class POSController extends Controller
                 'total' => $request->total,
             ]);
             
-            // Create transaction items
+            // Create transaction items and reduce stock
             foreach ($request->items as $item) {
                 TransactionItem::create([
                     'transaction_id' => $transaction->id,
@@ -113,6 +122,10 @@ class POSController extends Controller
                     'price' => $item['price'],
                     'subtotal' => $item['subtotal'],
                 ]);
+                
+                // Reduce stock
+                $product = Product::find($item['product_id']);
+                $product->reduceStock($item['quantity']);
             }
             
             DB::commit();
@@ -135,5 +148,31 @@ class POSController extends Controller
                 'message' => 'Gagal menyimpan transaksi: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Check stock availability
+     */
+    public function checkStock(Request $request)
+    {
+        $productId = $request->input('product_id');
+        $quantity = $request->input('quantity', 1);
+        
+        $product = Product::find($productId);
+        
+        if (!$product) {
+            return response()->json([
+                'available' => false,
+                'message' => 'Produk tidak ditemukan'
+            ]);
+        }
+        
+        return response()->json([
+            'available' => $product->isInStock($quantity),
+            'stock' => $product->stock,
+            'message' => $product->isInStock($quantity) 
+                ? 'Stock tersedia' 
+                : "Stock tidak cukup. Tersedia: {$product->stock}"
+        ]);
     }
 }

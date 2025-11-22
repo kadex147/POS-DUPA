@@ -27,6 +27,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -51,6 +52,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -76,5 +78,24 @@ class ProductController extends Controller
         
         $product->delete();
         return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus');
+    }
+
+    /**
+     * Update stock via AJAX
+     */
+    public function updateStock(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'stock' => 'required|integer|min:0',
+        ]);
+
+        $product->stock = $validated['stock'];
+        $product->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Stock berhasil diupdate',
+            'stock' => $product->stock
+        ]);
     }
 }

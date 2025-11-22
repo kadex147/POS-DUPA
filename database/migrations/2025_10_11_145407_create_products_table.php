@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->decimal('price', 12, 2);
+            $table->integer('stock')->default(0); // ← Pindahkan setelah price
             $table->string('image')->nullable();
             $table->timestamps();
         });
@@ -21,5 +22,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('products');
+        // ← Hapus baris $table->dropColumn('stock');
     }
 };

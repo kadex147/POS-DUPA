@@ -37,29 +37,44 @@
         <div id="productsGrid" class="flex-1 overflow-y-auto px-4 lg:px-6 pb-4">
            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-5 gap-3 lg:gap-4 auto-rows-max">
                 @forelse($products as $product)
-                <div class="product-card-soft cursor-pointer" onclick='addToCart(@json($product))'>
+                <div class="product-card-soft cursor-pointer {{ $product->stock <= 0 ? 'opacity-60' : '' }}" 
+                     onclick='{{ $product->stock > 0 ? "addToCart(" . json_encode($product) . ")" : "showOutOfStock()" }}'>
                     <div class="product-image">
                         @if($product->image)
                             <img src="{{ asset('storage/' . $product->image) }}" 
                                  alt="Produk" 
-                                 class="w-full h-full object-cover">
+                                 class="w-full h-full object-cover {{ $product->stock <= 0 ? 'grayscale' : '' }}">
                         @else
                             <svg class="w-16 h-16 text-gray-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
                             </svg>
                         @endif
                         
-                        <button onclick='event.stopPropagation(); addToCart(@json($product))' 
-                                class="add-button flex items-center justify-center hover:scale-110 active:scale-95 z-10">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                            </svg>
-                        </button>
+                        @if($product->stock <= 0)
+                            <div class="absolute inset-0 bg-black/50 flex items-center justify-center rounded-t-2xl">
+                                <span class="text-white font-bold text-sm bg-red-500 px-3 py-1 rounded-full">HABIS</span>
+                            </div>
+                        @else
+                            <button onclick='event.stopPropagation(); addToCart(@json($product))' 
+                                    class="add-button flex items-center justify-center hover:scale-110 active:scale-95 z-10">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                                </svg>
+                            </button>
+                        @endif
                     </div>
                     
                     <div class="p-3 bg-white border-t border-gray-100 grow flex flex-col justify-between">
                         <h3 class="font-semibold text-gray-800 text-sm mb-2 line-clamp-2 leading-tight" title="{{ $product->name }}">{{ $product->name }}</h3>
-                        <p class="text-sm font-bold text-orange-600">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                        <div class="space-y-1">
+                            <p class="text-sm font-bold text-orange-600">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                            <p class="text-xs">
+                                <span class="font-semibold text-gray-600">Stock:</span> 
+                                <span class="font-bold {{ $product->stock <= 0 ? 'text-red-600' : ($product->stock < 10 ? 'text-orange-600' : 'text-green-600') }}">
+                                    {{ $product->stock }}
+                                </span>
+                            </p>
+                        </div>
                     </div>
                 </div>
                 @empty
@@ -201,7 +216,6 @@
 <!-- Modal Konfirmasi Kosongkan Keranjang dengan Soft Design -->
 <div id="clearCartModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-300">
     <div class="bg-white rounded-3xl p-6 w-full max-w-md relative transform transition-all duration-300 scale-95 opacity-0" id="clearCartModalContent">
-        <!-- Icon Warning -->
         <div class="flex justify-center mb-4">
             <div class="w-16 h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center">
                 <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,11 +224,9 @@
             </div>
         </div>
         
-        <!-- Title & Description -->
         <h3 class="text-xl font-bold text-center text-gray-800 mb-2">Kosongkan Keranjang?</h3>
         <p class="text-center text-gray-600 text-sm mb-6">Semua produk dalam keranjang akan dihapus</p>
         
-        <!-- Action Buttons -->
         <div class="flex gap-3">
             <button onclick="closeClearCartModal()" 
                     class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-200 active:scale-95">
@@ -236,15 +248,33 @@
 // Load cart from localStorage
 let cart = JSON.parse(localStorage.getItem('posCart')) || [];
 
+// Product stock data from server
+const productStocks = @json($products->pluck('stock', 'id'));
+
 // Save cart to localStorage
 function saveCart() {
     localStorage.setItem('posCart', JSON.stringify(cart));
 }
 
+function showOutOfStock() {
+    showToast('Produk ini sedang habis');
+}
+
 function addToCart(product) {
+    // Check if product has stock
+    if (product.stock <= 0) {
+        showToast('Stock produk habis');
+        return;
+    }
+    
     const existingItem = cart.find(item => item.id === product.id);
     
     if (existingItem) {
+        // Check if adding more would exceed stock
+        if (existingItem.quantity >= product.stock) {
+            showToast(`Stock tidak cukup. Tersedia: ${product.stock}`);
+            return;
+        }
         existingItem.quantity++;
     } else {
         cart.push({
@@ -252,14 +282,13 @@ function addToCart(product) {
             name: product.name,
             price: parseFloat(product.price),
             image: product.image,
+            stock: product.stock,
             quantity: 1
         });
     }
     
     saveCart();
     updateCart();
-    
-    // Toast notification (optional)
     showToast('Produk ditambahkan ke keranjang');
 }
 
@@ -291,7 +320,6 @@ function updateCart() {
         
         html += `
             <div class="cart-item-soft">
-                <!-- Product Header -->
                 <div class="flex items-start gap-2 mb-2">
                     <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
                         ${item.image ? 
@@ -304,6 +332,7 @@ function updateCart() {
                     <div class="flex-1 min-w-0">
                         <h4 class="font-semibold text-sm text-gray-800 truncate leading-tight">${item.name}</h4>
                         <p class="text-xs text-gray-500 mt-0.5">Rp ${item.price.toLocaleString('id-ID')}</p>
+                        <p class="text-xs text-gray-500">Stock: ${item.stock}</p>
                     </div>
                     <button onclick="removeItem(${index})" 
                             class="text-red-500 hover:text-red-700 p-1 flex-shrink-0 hover:bg-red-50 rounded-lg transition-colors"
@@ -314,7 +343,6 @@ function updateCart() {
                     </button>
                 </div>
                 
-                <!-- Quantity Controls -->
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2 bg-white rounded-lg p-1 border border-gray-200 shadow-sm">
                         <button onclick="decreaseQuantity(${index})" 
@@ -326,10 +354,12 @@ function updateCart() {
                         <input type="number" 
                                value="${item.quantity}" 
                                min="1"
+                               max="${item.stock}"
                                onchange="updateQuantity(${index}, this.value)"
                                class="w-12 text-center text-sm font-bold border-0 focus:outline-none focus:ring-0 bg-transparent">
                         <button onclick="increaseQuantity(${index})" 
-                                class="w-7 h-7 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg flex items-center justify-center hover:from-green-600 hover:to-green-700 transition-all active:scale-95 shadow-md">
+                                ${item.quantity >= item.stock ? 'disabled' : ''}
+                                class="w-7 h-7 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg flex items-center justify-center hover:from-green-600 hover:to-green-700 transition-all active:scale-95 shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                             </svg>
@@ -355,6 +385,10 @@ function removeItem(index) {
 }
 
 function increaseQuantity(index) {
+    if (cart[index].quantity >= cart[index].stock) {
+        showToast(`Stock tidak cukup. Tersedia: ${cart[index].stock}`);
+        return;
+    }
     cart[index].quantity++;
     saveCart();
     updateCart();
@@ -372,17 +406,16 @@ function decreaseQuantity(index) {
 
 function updateQuantity(index, quantity) {
     const qty = parseInt(quantity);
-    if (qty > 0) {
+    if (qty > 0 && qty <= cart[index].stock) {
         cart[index].quantity = qty;
+    } else if (qty > cart[index].stock) {
+        showToast(`Stock tidak cukup. Tersedia: ${cart[index].stock}`);
+        cart[index].quantity = cart[index].stock;
     } else {
         cart.splice(index, 1);
     }
     saveCart();
     updateCart();
-}
-
-function clearCart() {
-    // Function ini tidak dipakai lagi, diganti dengan modal
 }
 
 function openClearCartModal() {
@@ -397,7 +430,6 @@ function openClearCartModal() {
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     
-    // Trigger animation
     setTimeout(() => {
         modalContent.classList.remove('scale-95', 'opacity-0');
         modalContent.classList.add('scale-100', 'opacity-100');
@@ -500,6 +532,11 @@ function confirmOrder() {
             btnConfirm.disabled = false;
             btnConfirm.textContent = 'Konfirmasi Pesanan';
             
+            // Reload page to update stock display
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+            
         } else {
             alert('Transaksi gagal: ' + (data.message || 'Terjadi kesalahan'));
             btnConfirm.disabled = false;
@@ -555,7 +592,7 @@ document.getElementById('searchProduct').addEventListener('input', function(e) {
     }, 500);
 });
 
-// Toast notification (optional)
+// Toast notification
 function showToast(message) {
     const toast = document.createElement('div');
     toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50 animate-slideInDown';

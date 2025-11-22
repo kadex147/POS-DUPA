@@ -26,6 +26,13 @@ Route::middleware(['auth'])->group(function () {
         // --- RUTE BARU UNTUK MODAL DETAIL ---
         Route::get('/transaction-details/{transaction}', [DashboardController::class, 'getTransactionDetails'])
              ->name('transaction.details');
+                    // Route untuk update stock product
+        Route::post('/products/{product}/update-stock', [ProductController::class, 'updateStock'])
+            ->name('products.updateStock');
+
+        // Route untuk check stock (optional, untuk AJAX check)
+        Route::post('/pos/check-stock', [POSController::class, 'checkStock'])
+            ->name('pos.checkStock');
         // --- BATAS RUTE BARU ---
         
         Route::resource('categories', CategoryController::class);
