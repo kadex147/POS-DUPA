@@ -6,10 +6,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Point of Sale')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style>
-        [x-cloak] { display: none !important; }
-    </style>
 </head>
 <body class="bg-gray-50">
     <div class="flex h-screen">
@@ -17,7 +13,7 @@
         <!-- Mobile Overlay -->
         <div id="overlay" 
              class="fixed inset-0 bg-black/50 z-40 lg:hidden hidden backdrop-blur-sm"
-             onclick="toggleSidebar()">
+             onclick="closeSidebar()">
         </div>
         
         <!-- Sidebar dengan Soft Design -->
@@ -112,73 +108,65 @@
 
         <div class="flex-1 flex flex-col overflow-hidden">
             
-                    <!-- Header/Navbar dengan Soft Design dan Shadow -->
-        <header class="bg-white border-b border-gray-100 px-4 lg:px-8 py-4 shadow-sm relative z-40">
-            <div class="flex justify-between items-center">
-                <!-- Hamburger Menu (Mobile Only) -->
-                <button onclick="toggleSidebar()" 
-                        class="lg:hidden p-2.5 rounded-xl hover:bg-gray-50 transition-all duration-200 active:scale-95">
-                    <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
-                </button>
-
-                <!-- Page Title (Optional - Hidden on Mobile) -->
-                <div class="hidden sm:block">
-                    <h1 class="text-xl font-bold text-gray-800">@yield('page-title', '')</h1>
-                </div>
-
-                <!-- User Menu dengan Alpine.js -->
-                <div x-data="{ open: false }" class="relative ml-auto">
-                    <button @click="open = !open" 
-                            type="button"
-                            class="flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all duration-200 active:scale-95 border border-gray-100">
-                        <!-- Info User -->
-                        <div class="text-right">
-                            <div class="text-xs lg:text-sm font-bold text-gray-800">{{ ucfirst(Auth::user()->role) }}</div>
-                            <div class="text-xs text-gray-500">{{ Auth::user()->username }}</div>
-                        </div>
-                        <!-- Avatar Bulat dengan Gradient -->
-                        <div class="w-10 h-10 lg:w-11 lg:h-11 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full flex items-center justify-center shadow-lg ring-2 ring-gray-200 ring-offset-2">
-                            <svg class="w-5 h-5 lg:w-6 lg:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                            </svg>
-                        </div>
+            <!-- Header/Navbar dengan Soft Design dan Shadow -->
+            <header class="bg-white border-b border-gray-100 px-4 lg:px-8 py-4 shadow-sm relative z-40">
+                <div class="flex justify-between items-center">
+                    <!-- Hamburger Menu (Mobile Only) -->
+                    <button onclick="toggleSidebar()" 
+                            class="lg:hidden p-2.5 rounded-xl hover:bg-gray-50 transition-all duration-200 active:scale-95">
+                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
                     </button>
 
-                    <!-- Dropdown Menu dengan Soft Design -->
-                    <div x-show="open" 
-                        @click.outside="open = false"
-                        x-cloak
-                        x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 scale-95"
-                        x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave="transition ease-in duration-150"
-                        x-transition:leave-start="opacity-100 scale-100"
-                        x-transition:leave-end="opacity-0 scale-95"
-                        class="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 overflow-hidden">
-                        
-                        <!-- User Info in Dropdown -->
-                        <div class="px-4 py-3 border-b border-gray-100">
-                            <p class="text-sm font-bold text-gray-800">{{ Auth::user()->username }}</p>
-                            <p class="text-xs text-gray-500 mt-0.5">{{ Auth::user()->email }}</p>
-                        </div>
+                    <!-- Page Title (Optional - Hidden on Mobile) -->
+                    <div class="hidden sm:block">
+                        <h1 class="text-xl font-bold text-gray-800">@yield('page-title', '')</h1>
+                    </div>
 
-                        <!-- Logout Button -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" 
-                                    class="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200 flex items-center gap-3 font-medium">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    <!-- User Menu dengan JavaScript Vanilla -->
+                    <div class="relative ml-auto" id="userMenuContainer">
+                        <button onclick="toggleUserMenu()" 
+                                type="button"
+                                class="flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all duration-200 active:scale-95 border border-gray-100">
+                            <!-- Info User -->
+                            <div class="text-right">
+                                <div class="text-xs lg:text-sm font-bold text-gray-800">{{ ucfirst(Auth::user()->role) }}</div>
+                                <div class="text-xs text-gray-500">{{ Auth::user()->username }}</div>
+                            </div>
+                            <!-- Avatar Bulat dengan Gradient -->
+                            <div class="w-10 h-10 lg:w-11 lg:h-11 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full flex items-center justify-center shadow-lg ring-2 ring-gray-200 ring-offset-2">
+                                <svg class="w-5 h-5 lg:w-6 lg:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                 </svg>
-                                Logout
-                            </button>
-                        </form>
+                            </div>
+                        </button>
+
+                        <!-- Dropdown Menu dengan Soft Design -->
+                        <div id="userMenuDropdown"
+                            class="hidden absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 overflow-hidden opacity-0 scale-95 transition-all duration-200">
+                            
+                            <!-- User Info in Dropdown -->
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-sm font-bold text-gray-800">{{ Auth::user()->username }}</p>
+                                <p class="text-xs text-gray-500 mt-0.5">{{ Auth::user()->email }}</p>
+                            </div>
+
+                            <!-- Logout Button -->
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" 
+                                        class="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200 flex items-center gap-3 font-medium">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                    </svg>
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </header>
+            </header>
 
             <!-- Main Content Area -->
             <main class="flex-1 p-4 lg:p-8 overflow-y-auto bg-gray-50">
@@ -187,8 +175,9 @@
         </div>
     </div>
     
-    <!-- JavaScript untuk Toggle Sidebar -->
+    <!-- JavaScript untuk Toggle Sidebar dan User Menu -->
     <script>
+        // Function untuk toggle sidebar (buka/tutup)
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');
@@ -204,21 +193,70 @@
             }
         }
 
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('DOMContentLoaded', function() {
+        // Function untuk menutup sidebar
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');
-            overlay.addEventListener('click', function() {
-                toggleSidebar();
-            });
+            
+            // Hanya tutup jika sidebar sedang terbuka
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Function untuk toggle user menu dropdown
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userMenuDropdown');
+            const isHidden = dropdown.classList.contains('hidden');
+            
+            if (isHidden) {
+                // Show dropdown
+                dropdown.classList.remove('hidden');
+                setTimeout(() => {
+                    dropdown.classList.remove('opacity-0', 'scale-95');
+                    dropdown.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            } else {
+                // Hide dropdown
+                dropdown.classList.remove('opacity-100', 'scale-100');
+                dropdown.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    dropdown.classList.add('hidden');
+                }, 200);
+            }
+        }
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const container = document.getElementById('userMenuContainer');
+            const dropdown = document.getElementById('userMenuDropdown');
+            
+            if (container && dropdown && !container.contains(event.target)) {
+                if (!dropdown.classList.contains('hidden')) {
+                    dropdown.classList.remove('opacity-100', 'scale-100');
+                    dropdown.classList.add('opacity-0', 'scale-95');
+                    setTimeout(() => {
+                        dropdown.classList.add('hidden');
+                    }, 200);
+                }
+            }
         });
 
         // Close sidebar when pressing Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                const sidebar = document.getElementById('sidebar');
-                const overlay = document.getElementById('overlay');
-                if (!sidebar.classList.contains('-translate-x-full')) {
-                    toggleSidebar();
+                closeSidebar();
+                
+                // Also close user menu
+                const dropdown = document.getElementById('userMenuDropdown');
+                if (dropdown && !dropdown.classList.contains('hidden')) {
+                    dropdown.classList.remove('opacity-100', 'scale-100');
+                    dropdown.classList.add('opacity-0', 'scale-95');
+                    setTimeout(() => {
+                        dropdown.classList.add('hidden');
+                    }, 200);
                 }
             }
         });

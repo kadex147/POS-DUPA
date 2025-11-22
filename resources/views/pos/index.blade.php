@@ -257,13 +257,13 @@ function saveCart() {
 }
 
 function showOutOfStock() {
-    showToast('Produk ini sedang habis');
+    showToast('Produk ini sedang habis', 'error');
 }
 
 function addToCart(product) {
     // Check if product has stock
     if (product.stock <= 0) {
-        showToast('Stock produk habis');
+        showToast('Stock produk habis', 'error');
         return;
     }
     
@@ -272,7 +272,7 @@ function addToCart(product) {
     if (existingItem) {
         // Check if adding more would exceed stock
         if (existingItem.quantity >= product.stock) {
-            showToast(`Stock tidak cukup. Tersedia: ${product.stock}`);
+            showToast(`Stock tidak cukup. Tersedia: ${product.stock}`, 'error');
             return;
         }
         existingItem.quantity++;
@@ -289,7 +289,7 @@ function addToCart(product) {
     
     saveCart();
     updateCart();
-    showToast('Produk ditambahkan ke keranjang');
+    showToast('Produk ditambahkan ke keranjang', 'success');
 }
 
 function updateCart() {
@@ -386,7 +386,7 @@ function removeItem(index) {
 
 function increaseQuantity(index) {
     if (cart[index].quantity >= cart[index].stock) {
-        showToast(`Stock tidak cukup. Tersedia: ${cart[index].stock}`);
+        showToast(`Stock tidak cukup. Tersedia: ${cart[index].stock}`, 'error');
         return;
     }
     cart[index].quantity++;
@@ -409,7 +409,7 @@ function updateQuantity(index, quantity) {
     if (qty > 0 && qty <= cart[index].stock) {
         cart[index].quantity = qty;
     } else if (qty > cart[index].stock) {
-        showToast(`Stock tidak cukup. Tersedia: ${cart[index].stock}`);
+        showToast(`Stock tidak cukup. Tersedia: ${cart[index].stock}`, 'error');
         cart[index].quantity = cart[index].stock;
     } else {
         cart.splice(index, 1);
@@ -420,7 +420,7 @@ function updateQuantity(index, quantity) {
 
 function openClearCartModal() {
     if (cart.length === 0) {
-        showToast('Keranjang sudah kosong');
+        showToast('Keranjang sudah kosong', 'error');
         return;
     }
     
@@ -454,7 +454,7 @@ function confirmClearCart() {
     saveCart();
     updateCart();
     closeClearCartModal();
-    showToast('Keranjang berhasil dikosongkan');
+    showToast('Keranjang berhasil dikosongkan', 'success');
 }
 
 function openOrderModal() {
@@ -592,16 +592,30 @@ document.getElementById('searchProduct').addEventListener('input', function(e) {
     }, 500);
 });
 
-// Toast notification
-function showToast(message) {
+// Toast notification with type (success or error)
+function showToast(message, type = 'success') {
     const toast = document.createElement('div');
-    toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50 animate-slideInDown';
-    toast.textContent = message;
+    
+    // Set background color based on type
+    const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
+    
+    toast.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-xl shadow-lg z-50 animate-slideInDown flex items-center gap-3`;
+    
+    // Add icon based on type
+    const icon = type === 'error' 
+        ? `<svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.707 8.707 7.293z" clip-rule="evenodd"/>
+           </svg>`
+        : `<svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+           </svg>`;
+    
+    toast.innerHTML = icon + `<span>${message}</span>`;
     document.body.appendChild(toast);
     
     setTimeout(() => {
         toast.remove();
-    }, 2000);
+    }, 3000);
 }
 
 // Initialize on page load
