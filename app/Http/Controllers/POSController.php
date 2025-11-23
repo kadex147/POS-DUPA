@@ -33,7 +33,6 @@ class POSController extends Controller
         }
         
         // Join dengan transaction_items untuk menghitung total pesanan
-        // Urutkan berdasarkan total quantity yang pernah dipesan (DESC)
         $query->leftJoin('transaction_items', 'products.id', '=', 'transaction_items.product_id')
             ->select(
                 'products.*',
@@ -49,6 +48,8 @@ class POSController extends Controller
                 'products.created_at',
                 'products.updated_at'
             )
+            // Urutkan berdasarkan stock > 0 terlebih dahulu, kemudian total_ordered, lalu nama
+            ->orderByRaw('CASE WHEN products.stock > 0 THEN 0 ELSE 1 END')
             ->orderBy('total_ordered', 'DESC')
             ->orderBy('products.name', 'ASC');
         

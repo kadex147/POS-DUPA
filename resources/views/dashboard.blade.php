@@ -56,7 +56,7 @@
     <!-- Charts Section - Responsive Grid -->
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6">
         <!-- Income Chart -->
-        <div class="soft-card">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100">
             <div class="p-4 lg:p-6">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
                     <h3 class="text-base lg:text-lg font-bold text-gray-800">Pendapatan</h3>
@@ -138,7 +138,7 @@
         </div>
 
         <!-- Top Products Chart -->
-        <div class="soft-card">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100">
             <div class="p-4 lg:p-8">
                 <h3 class="text-base lg:text-lg font-bold text-gray-800 mb-4">Produk Terlaris</h3>
                 <div class="h-80 lg:h-96"> 
@@ -154,74 +154,227 @@
         </div>
     </div>
 
-    <!-- Recent Transactions Table - Responsive dengan Soft Design -->
-    <div class="soft-card">
-        <div class="p-4 lg:p-6">
-            <h3 class="text-base lg:text-lg font-bold text-gray-800 mb-4">Riwayat Transaksi Terbaru</h3>
-            
-            <!-- Mobile: Card View -->
-            <div class="block lg:hidden space-y-3">
-                @forelse($recentTransactions as $transaction)
-                <div class="cart-item-soft">
-                    <div class="flex justify-between items-start mb-2">
-                        <a href="#" onclick="showTransactionDetails(event, {{ $transaction->id }})" 
-                           class="text-blue-600 hover:text-blue-800 font-semibold text-sm hover:underline">
-                            {{ $transaction->invoice_number }}
-                        </a>
-                        <span class="text-xs text-gray-500">{{ $transaction->created_at->format('d M Y') }}</span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-gray-600">{{ $transaction->user->username }}</span>
-                        <span class="font-bold text-green-600">+ Rp {{ number_format($transaction->total, 0, ',', '.') }}</span>
-                    </div>
-                </div>
-                @empty
-                <div class="text-center py-8">
-                    <p class="text-gray-400 text-sm">Belum ada transaksi</p>
-                </div>
-                @endforelse
-            </div>
+<!-- Tambahkan di bagian Recent Transactions Table -->
 
-            <!-- Desktop: Table View -->
-            <div class="hidden lg:block table-soft">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Invoice</th>
-                            <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tanggal</th>
-                            <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kasir</th>
-                            <th scope="col" class="px-6 py-3 text-right text-sm font-semibold text-gray-700">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($recentTransactions as $transaction)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="#" onclick="showTransactionDetails(event, {{ $transaction->id }})" 
-                                   class="text-blue-600 hover:text-blue-800 font-semibold hover:underline">
-                                    {{ $transaction->invoice_number }}
-                                </a>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                {{ $transaction->created_at->format('d M Y, H:i') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                {{ $transaction->user->username }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-green-600">
-                                + Rp {{ number_format($transaction->total, 0, ',', '.') }}
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="4" class="px-6 py-8 text-center text-sm text-gray-400">
-                                Belum ada transaksi
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+<!-- Mobile: Card View -->
+<div class="block lg:hidden space-y-3">
+    @forelse($recentTransactions as $transaction)
+    <div class="cart-item-soft">
+        <div class="flex justify-between items-start mb-2">
+            <a href="#" onclick="showTransactionDetails(event, {{ $transaction->id }})" 
+               class="text-blue-600 hover:text-blue-800 font-semibold text-sm hover:underline">
+                {{ $transaction->invoice_number }}
+            </a>
+            <span class="text-xs text-gray-500">{{ $transaction->created_at->format('d M Y') }}</span>
+        </div>
+        <div class="flex justify-between items-center text-sm">
+            <span class="text-gray-600">{{ $transaction->user->username }}</span>
+            <span class="font-bold text-green-600">+ Rp {{ number_format($transaction->total, 0, ',', '.') }}</span>
+        </div>
+        <div class="mt-2 pt-2 border-t border-gray-100">
+            <button onclick="confirmDeleteTransaction({{ $transaction->id }}, '{{ addslashes($transaction->invoice_number) }}')" 
+                    class="text-red-600 hover:text-red-800 text-xs font-semibold flex items-center gap-1 hover:bg-red-50 px-2 py-1 rounded-lg transition-all">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                Hapus
+            </button>
+        </div>
+    </div>
+    @empty
+    <div class="text-center py-8">
+        <p class="text-gray-400 text-sm">Belum ada transaksi</p>
+    </div>
+    @endforelse
+</div>
+
+<!-- Desktop: Table View -->
+<div class="hidden lg:block table-soft">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead>
+            <tr>
+                <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Invoice</th>
+                <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tanggal</th>
+                <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kasir</th>
+                <th scope="col" class="px-6 py-3 text-right text-sm font-semibold text-gray-700">Total</th>
+                <th scope="col" class="px-6 py-3 text-center text-sm font-semibold text-gray-700">Aksi</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            @forelse($recentTransactions as $transaction)
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <a href="#" onclick="showTransactionDetails(event, {{ $transaction->id }})" 
+                       class="text-blue-600 hover:text-blue-800 font-semibold hover:underline">
+                        {{ $transaction->invoice_number }}
+                    </a>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    {{ $transaction->created_at->format('d M Y, H:i') }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    {{ $transaction->user->username }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-green-600">
+                    + Rp {{ number_format($transaction->total, 0, ',', '.') }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                    <button onclick="confirmDeleteTransaction({{ $transaction->id }}, '{{ addslashes($transaction->invoice_number) }}')" 
+                            class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all inline-flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-400">
+                    Belum ada transaksi
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal Konfirmasi Hapus Transaksi -->
+<div id="deleteTransactionModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-300">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md relative transform transition-all duration-300 scale-95 opacity-0" id="deleteTransactionModalContent">
+        <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center">
+                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
             </div>
+        </div>
+        
+        <h3 class="text-xl font-bold text-center text-gray-800 mb-2">Hapus Transaksi?</h3>
+        <p class="text-center text-gray-600 text-sm mb-2">
+            Invoice: <span id="deleteInvoiceNumber" class="font-bold"></span>
+        </p>
+        <p class="text-center text-gray-500 text-xs mb-6">Tindakan ini tidak dapat dibatalkan</p>
+        
+        <div class="flex gap-3">
+            <button onclick="closeDeleteModal()" 
+                    class="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-200 active:scale-95">
+                Batal
+            </button>
+            <button onclick="deleteTransaction()" 
+                    id="btnConfirmDelete"
+                    class="flex-1 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 active:scale-95 shadow-lg">
+                Ya, Hapus
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Global variable untuk ID transaksi yang akan dihapus
+let transactionToDelete = null;
+
+/**
+ * Konfirmasi hapus transaksi
+ */
+function confirmDeleteTransaction(transactionId, invoiceNumber) {
+    transactionToDelete = transactionId;
+    document.getElementById('deleteInvoiceNumber').textContent = invoiceNumber;
+    
+    const modal = document.getElementById('deleteTransactionModal');
+    const modalContent = document.getElementById('deleteTransactionModalContent');
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+/**
+ * Tutup modal konfirmasi hapus
+ */
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteTransactionModal');
+    const modalContent = document.getElementById('deleteTransactionModalContent');
+    
+    modalContent.classList.remove('scale-100', 'opacity-100');
+    modalContent.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        transactionToDelete = null;
+    }, 300);
+}
+
+/**
+ * Hapus transaksi
+ */
+function deleteTransaction() {
+    if (!transactionToDelete) return;
+    
+    const btnConfirm = document.getElementById('btnConfirmDelete');
+    btnConfirm.disabled = true;
+    btnConfirm.textContent = 'Menghapus...';
+    
+    fetch(`/transactions/${transactionToDelete}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeDeleteModal();
+            showToast('Transaksi berhasil dihapus', 'success');
+            
+            // Reload halaman setelah 1 detik
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            alert('Gagal menghapus transaksi: ' + (data.message || 'Terjadi kesalahan'));
+            btnConfirm.disabled = false;
+            btnConfirm.textContent = 'Ya, Hapus';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat menghapus transaksi');
+        btnConfirm.disabled = false;
+        btnConfirm.textContent = 'Ya, Hapus';
+    });
+}
+
+/**
+ * Toast notification
+ */
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
+    
+    toast.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-xl shadow-lg z-50 animate-slideInDown flex items-center gap-3`;
+    
+    const icon = type === 'error' 
+        ? `<svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.707 8.707 7.293z" clip-rule="evenodd"/>
+           </svg>`
+        : `<svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+           </svg>`;
+    
+    toast.innerHTML = icon + `<span>${message}</span>`;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+</script>
 
             <!-- Pagination dengan Soft Design -->
             @if($recentTransactions->hasPages())

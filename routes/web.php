@@ -20,25 +20,27 @@ Route::middleware(['auth'])->group(function () {
     
     // Admin Only Routes
     Route::middleware(['role:admin'])->group(function () {
-        // Ini adalah rute dashboard yang benar (menggunakan controller)
+        // Dashboard route
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // --- RUTE BARU UNTUK MODAL DETAIL ---
+        // Transaction routes
         Route::get('/transaction-details/{transaction}', [DashboardController::class, 'getTransactionDetails'])
              ->name('transaction.details');
-                    // Route untuk update stock product
+        
+        // PENTING: Route delete harus menggunakan parameter name yang sama dengan controller
+        Route::delete('/transactions/{id}', [DashboardController::class, 'deleteTransaction'])
+             ->name('transactions.destroy');
+        
+        // Product stock routes
         Route::post('/products/{product}/update-stock', [ProductController::class, 'updateStock'])
             ->name('products.updateStock');
-
-        // Route untuk check stock (optional, untuk AJAX check)
         Route::post('/pos/check-stock', [POSController::class, 'checkStock'])
             ->name('pos.checkStock');
-        // --- BATAS RUTE BARU ---
         
+        // Resource routes
         Route::resource('categories', CategoryController::class);
         Route::resource('products', ProductController::class);
         Route::resource('users', UserController::class);
-        Route::resource('transaction', UserController::class);
     });
     
     // POS Routes (Bisa diakses Admin & Kasir)

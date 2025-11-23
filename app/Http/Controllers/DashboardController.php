@@ -273,7 +273,7 @@ class DashboardController extends Controller
         ));
     }
     
-    /**
+   /**
      * Get transaction details (untuk modal print)
      */
     public function getTransactionDetails($id)
@@ -281,5 +281,56 @@ class DashboardController extends Controller
         $transaction = Transaction::with(['user', 'items.product'])->findOrFail($id);
         
         return response()->json($transaction);
+    }
+    
+    /**
+     * Hapus transaksi dan kembalikan stock produk
+     */
+    public function deleteTransaction($id)
+    {
+        try {
+            DB::beginTransaction();
+            
+            // Cari transaksi dengan error handling
+            $transaction = Transaction::with('items.product')->find($id);
+            
+            if (!$transaction) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Transaksi tidak ditemukan'
+                ], 404);
+            }
+            
+            // Kembalikan stock untuk setiap item
+            foreach ($transaction->items as $item) {
+                if ($item->product) {
+                    // Kembalikan stock
+                    $item->product->increment('stock', $item->quantity);
+                }
+            }
+            
+            // Hapus transaction items
+            $transaction->items()->delete();
+            
+            // Hapus transaksi
+            $transaction->delete();
+            
+            DB::commit();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaksi berhasil dihapus dan stock dikembalikan'
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            \Log::error('Error deleting transaction: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus transaksi: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

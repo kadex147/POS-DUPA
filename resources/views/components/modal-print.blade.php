@@ -58,7 +58,7 @@
         
         <!-- Tombol Aksi -->
         <div class="space-y-2">
-            <button onclick="printReceipt()" 
+            <button onclick="printReceiptAndClose()" 
                     class="w-full py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition font-semibold flex items-center justify-center gap-2 text-sm lg:text-base">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
@@ -122,7 +122,7 @@
         
         <!-- Tombol Aksi -->
         <div class="space-y-2">
-            <button onclick="printReceipt()" 
+            <button onclick="printReceiptAndCloseHistory()" 
                     class="w-full py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition font-semibold flex items-center justify-center gap-2 text-sm lg:text-base">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
@@ -182,6 +182,8 @@ window.showPostTransactionModal = function(transactionData) {
     const modal = document.getElementById('postTransactionDetailModal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+    
+    // TIDAK ADA setTimeout untuk auto close
 };
 
 /**
@@ -192,6 +194,9 @@ window.closePostTransactionModal = function() {
     modal.classList.add('hidden');
     modal.classList.remove('flex');
     window.currentTransaction = null;
+    
+    // Reload halaman setelah modal ditutup untuk update stock
+    window.location.reload();
 };
 
 /**
@@ -241,6 +246,28 @@ window.closePrintModal = function() {
     modal.classList.add('hidden');
     modal.classList.remove('flex');
     window.currentTransaction = null;
+};
+
+/**
+ * Cetak struk dan tutup modal (untuk post-transaction)
+ */
+window.printReceiptAndClose = function() {
+    printReceipt();
+    // Tutup modal setelah print (sama seperti tombol tutup)
+    setTimeout(() => {
+        closePostTransactionModal(); // Akan menutup modal dan reload halaman
+    }, 500);
+};
+
+/**
+ * Cetak struk dan tutup modal (untuk history)
+ */
+window.printReceiptAndCloseHistory = function() {
+    printReceipt();
+    // Tutup modal setelah print
+    setTimeout(() => {
+        closePrintModal();
+    }, 500);
 };
 
 /**
@@ -457,10 +484,6 @@ window.printReceipt = function() {
 <div class="footer">
     <p>Terima kasih atas</p>
     <p>kunjungan Anda!</p>
-    <p style="margin-top: 5px;">--- Barang yang ---</p>
-    <p> sudah dibeli </p>
-    <p>--- tidak dapat ---</p>
-    <p>dikembalikan</p>
 </div>
 
 </body>

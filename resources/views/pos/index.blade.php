@@ -37,13 +37,13 @@
         <div id="productsGrid" class="flex-1 overflow-y-auto px-4 lg:px-6 pb-4">
            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-5 gap-3 lg:gap-4 auto-rows-max">
                 @forelse($products as $product)
-                <div class="product-card-soft cursor-pointer {{ $product->stock <= 0 ? 'opacity-60' : '' }}" 
+                <div class="product-card-soft cursor-pointer {{ $product->stock <= 0 ? 'opacity-90' : '' }}" 
                      onclick='{{ $product->stock > 0 ? "addToCart(" . json_encode($product) . ")" : "showOutOfStock()" }}'>
                     <div class="product-image">
                         @if($product->image)
                             <img src="{{ asset('storage/' . $product->image) }}" 
                                  alt="Produk" 
-                                 class="w-full h-full object-cover {{ $product->stock <= 0 ? 'grayscale' : '' }}">
+                                 class="w-full h-full object-cover {{ $product->stock <= 0 ?  : '' }}">
                         @else
                             <svg class="w-16 h-16 text-gray-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
@@ -52,7 +52,7 @@
                         
                         @if($product->stock <= 0)
                             <div class="absolute inset-0 bg-black/50 flex items-center justify-center rounded-t-2xl">
-                                <span class="text-white font-bold text-sm bg-red-500 px-3 py-1 rounded-full">HABIS</span>
+                                <span class="text-white font-bold text-sm bg-red-600 px-3 py-1 rounded-full">HABIS</span>
                             </div>
                         @else
                             <button onclick='event.stopPropagation(); addToCart(@json($product))' 
@@ -531,11 +531,6 @@ function confirmOrder() {
             
             btnConfirm.disabled = false;
             btnConfirm.textContent = 'Konfirmasi Pesanan';
-            
-            // Reload page to update stock display
-            setTimeout(() => {
-                window.location.reload();
-            }, 2000);
             
         } else {
             alert('Transaksi gagal: ' + (data.message || 'Terjadi kesalahan'));
