@@ -40,19 +40,22 @@ class BluetoothThermalPrinter {
         return true;
     }
 
-    /**
+/**
      * Connect ke printer Bluetooth
      */
     async connect() {
         try {
             console.log('Mencari printer Bluetooth...');
             
-            // Request Bluetooth device
+            // Request Bluetooth device - acceptAllDevices untuk kompatibilitas lebih luas
             this.device = await navigator.bluetooth.requestDevice({
-                filters: [
-                    { services: ['000018f0-0000-1000-8000-00805f9b34fb'] }, // Printer service
-                ],
-                optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
+                // Gunakan acceptAllDevices untuk mencari semua device
+                acceptAllDevices: true,
+                optionalServices: [
+                    '000018f0-0000-1000-8000-00805f9b34fb', // Service standar printer
+                    '49535343-fe7d-4ae5-8fa9-9fafd205e455', // Service alternatif (HM-10)
+                    'e7810a71-73ae-499d-8c15-faa9aef0c3f2'  // Nordic UART Service
+                ]
             });
 
             console.log('Printer ditemukan:', this.device.name);
@@ -61,22 +64,56 @@ class BluetoothThermalPrinter {
             const server = await this.device.gatt.connect();
             console.log('Terhubung ke GATT server');
 
-            // Get service
-            const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
+            // Coba berbagai kombinasi service dan characteristic
+            let service, characteristic;
+            const serviceUUIDs = [
+                '000018f0-0000-1000-8000-00805f9b34fb',
+                '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+                'e7810a71-73ae-499d-8c15-faa9aef0c3f2'
+            ];
             
-            // Get characteristic
-            this.characteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+            const characteristicUUIDs = [
+                '00002af1-0000-1000-8000-00805f9b34fb',
+                '49535343-8841-43f4-a8d4-ecbe34729bb3',
+                '49535343-1e4d-4bd9-ba61-23c647249616',
+                'e7810a72-73ae-499d-8c15-faa9aef0c3f2'
+            ];
+
+            // Loop mencoba berbagai kombinasi
+            for (const serviceUUID of serviceUUIDs) {
+                try {
+                    service = await server.getPrimaryService(serviceUUID);
+                    console.log('Service ditemukan:', serviceUUID);
+                    
+                    for (const charUUID of characteristicUUIDs) {
+                        try {
+                            characteristic = await service.getCharacteristic(charUUID);
+                            console.log('Characteristic ditemukan:', charUUID);
+                            this.characteristic = characteristic;
+                            console.log('Siap untuk print!');
+                            return true;
+                        } catch (e) {
+                            // Lanjut ke characteristic berikutnya
+                            continue;
+                        }
+                    }
+                } catch (e) {
+                    // Lanjut ke service berikutnya
+                    continue;
+                }
+            }
             
-            console.log('Siap untuk print!');
-            return true;
+            throw new Error('Tidak dapat menemukan service dan characteristic yang sesuai');
 
         } catch (error) {
             console.error('Gagal connect ke printer:', error);
             
             if (error.name === 'NotFoundError') {
                 alert('Printer tidak ditemukan. Pastikan printer Bluetooth sudah menyala dan dalam mode pairing.');
+            } else if (error.name === 'SecurityError') {
+                alert('Akses Bluetooth ditolak. Pastikan website ini menggunakan HTTPS.');
             } else {
-                alert('Gagal terhubung ke printer: ' + error.message);
+                alert('Gagal terhubung ke printer: ' + error.message + '\n\nCoba restart printer Bluetooth Anda dan coba lagi.');
             }
             
             return false;

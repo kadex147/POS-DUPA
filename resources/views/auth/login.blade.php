@@ -139,7 +139,7 @@
         <div class="flex justify-center mb-8 logo-container">
             <img src="{{ asset('storage/images/logo.png') }}" 
                  alt="Logo" 
-                 class="w-20 h-20 object-contain transition-transform duration-300"
+                 class="w-30 h-30 object-contain transition-transform duration-300"
                  onerror="this.onerror=null; this.style.display='none'; document.getElementById('logo-fallback').style.display='block';">
             
             {{-- Fallback jika logo tidak ada --}}
