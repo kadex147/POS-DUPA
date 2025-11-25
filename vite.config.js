@@ -1,14 +1,10 @@
-import { defineConfig, loadEnv } from 'vite'; // Wajib import loadEnv
+import { defineConfig, loadEnv } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import mkcert from 'vite-plugin-mkcert'; // Untuk HTTPS lokal (jika Ngrok mati)
 import tailwindcss from '@tailwindcss/vite'; 
 
 export default defineConfig(({ mode }) => {
-    // 1. Muat environment variables dari .env (untuk membaca VITE_NGROK_HOST)
+    // Load .env untuk membaca VITE_NGROK_HOST
     const env = loadEnv(mode, process.cwd(), '');
-    
-    // Tentukan HMR host: Gunakan Ngrok host jika ada, jika tidak, gunakan localhost
-    // Karena Anda ingin Artisan di 127.0.0.1, kita gunakan 127.0.0.1 sebagai fallback
     const hmrHost = env.VITE_NGROK_HOST || '127.0.0.1';
 
     return {
@@ -17,18 +13,14 @@ export default defineConfig(({ mode }) => {
                 input: ['resources/css/app.css', 'resources/js/app.js'],
                 refresh: true,
             }),
-            tailwindcss(), // Plugin TailwindCSS
-            mkcert(), // Plugin HTTPS
+            tailwindcss(), // Plugin Tailwind v4
         ],
         server: {
-            // Kita tetap mengizinkan host: '0.0.0.0' agar Vite bisa diakses dari Ngrok
-            host: '0.0.0.0', 
-            https: true, // Wajib aktif untuk Web Bluetooth
+            host: '0.0.0.0',
+            // https: true, // HAPUS ATAU KOMENTAR jika tidak punya sertifikat SSL manual
             hmr: {
-                // 2. Gunakan Ngrok Host (jika ada) atau fallback ke 127.0.0.1
-                host: hmrHost, 
-                port: 5173, 
-                protocol: 'wss', // Wajib untuk HTTPS (Ngrok)
+                host: hmrHost,
+                // port: 5173, // Optional, default sudah 5173
             },
         }
     };

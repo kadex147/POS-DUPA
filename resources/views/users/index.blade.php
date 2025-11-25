@@ -8,7 +8,7 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <h1 class="text-xl lg:text-2xl font-bold text-gray-800">List User</h1>
         <a href="{{ route('users.create') }}" 
-           class="btn-soft w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 text-center text-sm lg:text-base font-semibold shadow-lg">
+           class="btn-soft w-full sm:w-auto px-6 py-2.5 bg-linear-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 text-center text-sm lg:text-base font-semibold shadow-lg">
             <span class="flex items-center justify-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -21,7 +21,7 @@
     <!-- Success Message -->
     @if(session('success'))
         <div class="alert-soft alert-success-soft flex items-start gap-3">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-5 h-5 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
             </svg>
             <span>{{ session('success') }}</span>
@@ -65,7 +65,7 @@
     <div class="hidden lg:block soft-card overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+                <thead class="bg-linear-to-r from-gray-50 to-gray-100 border-b border-gray-200">
                     <tr>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Username</th>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>

@@ -114,7 +114,7 @@
             @else
                 <div id="currentImage" class="mb-4">
                     <p class="text-sm font-semibold text-gray-700 mb-2">Gambar Saat Ini:</p>
-                    <div class="w-32 h-32 lg:w-40 lg:h-40 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center border-2 border-gray-200 shadow-lg">
+                    <div class="w-32 h-32 lg:w-40 lg:h-40 bg-linear-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center border-2 border-gray-200 shadow-lg">
                         <svg class="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
                         </svg>
@@ -141,7 +141,7 @@
                 Batal
             </a>
             <button type="submit" 
-                    class="btn-soft w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 font-semibold shadow-lg">
+                    class="btn-soft w-full sm:w-auto px-6 py-2.5 bg-linear-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 font-semibold shadow-lg">
                 Simpan Perubahan
             </button>
         </div>

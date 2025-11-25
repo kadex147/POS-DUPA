@@ -125,7 +125,7 @@
                 Batal
             </a>
             <button type="submit" 
-                    class="btn-soft w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 font-semibold shadow-lg">
+                    class="btn-soft w-full sm:w-auto px-6 py-2.5 bg-linear-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 font-semibold shadow-lg">
                 Simpan Produk
             </button>
         </div>

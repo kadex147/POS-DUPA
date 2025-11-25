@@ -24,7 +24,7 @@
             <div class="p-6 text-center border-b border-gray-100">
                 <!-- Logo Image -->
                 <div class="inline-block mb-3 relative group">
-                    <div class="absolute inset-0 bg-gradient-to-br from-gray-400/20 to-gray-600/20 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+                    <div class="absolute inset-0 bg-linear-to-br from-gray-400/20 to-gray-600/20 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
                     <img src="{{ asset('storage/images/logo.png') }}" 
                          alt="Logo" 
                          class="relative w-20 h-20 lg:w-24 lg:h-24 object-contain rounded-2xl shadow-lg transition-transform duration-300 group-hover:scale-105"
@@ -32,7 +32,7 @@
                     
                     <!-- Fallback Logo jika gambar tidak ada -->
                     <div id="logo-fallback" 
-                         class="hidden relative w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-gray-600 to-gray-800 rounded-2xl items-center justify-center shadow-lg">
+                         class="hidden relative w-20 h-20 lg:w-24 lg:h-24 bg-linear-to-br from-gray-600 to-gray-800 rounded-2xl items-center justify-center shadow-lg">
                         <svg class="w-10 h-10 lg:w-12 lg:h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                         </svg>
@@ -135,7 +135,7 @@
                                 <div class="text-xs text-gray-500">{{ Auth::user()->username }}</div>
                             </div>
                             <!-- Avatar Bulat dengan Gradient -->
-                            <div class="w-10 h-10 lg:w-11 lg:h-11 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full flex items-center justify-center shadow-lg ring-2 ring-gray-200 ring-offset-2">
+                            <div class="w-10 h-10 lg:w-11 lg:h-11 bg-linear-to-br from-gray-600 to-gray-800 rounded-full flex items-center justify-center shadow-lg ring-2 ring-gray-200 ring-offset-2">
                                 <svg class="w-5 h-5 lg:w-6 lg:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                 </svg>

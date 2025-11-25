@@ -8,7 +8,7 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <h1 class="text-xl lg:text-2xl font-bold text-gray-800">List Kategori</h1>
         <a href="{{ route('categories.create') }}" 
-           class="btn-soft w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 text-center text-sm lg:text-base font-semibold shadow-lg">
+           class="btn-soft w-full sm:w-auto px-6 py-2.5 bg-linear-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 text-center text-sm lg:text-base font-semibold shadow-lg">
             <span class="flex items-center justify-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -21,7 +21,7 @@
     <!-- Success Message -->
     @if(session('success'))
         <div class="alert-soft alert-success-soft flex items-start gap-3">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-5 h-5 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
             </svg>
             <span>{{ session('success') }}</span>
@@ -66,7 +66,7 @@
     <div class="hidden lg:block soft-card overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+                <thead class="bg-linear-to-r from-gray-50 to-gray-100 border-b border-gray-200">
                     <tr>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama Kategori</th>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
@@ -151,7 +151,7 @@
     <div class="bg-white rounded-3xl p-6 w-full max-w-md relative transform transition-all duration-300 scale-95 opacity-0" id="deleteModalContent">
         <!-- Icon Warning -->
         <div class="flex justify-center mb-4">
-            <div class="w-16 h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center">
+            <div class="w-16 h-16 bg-linear-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center">
                 <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                 </svg>
@@ -173,7 +173,7 @@
                 @csrf
                 @method('DELETE')
                 <button type="submit" 
-                        class="w-full py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 active:scale-95 shadow-lg">
+                        class="w-full py-3 bg-linear-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 active:scale-95 shadow-lg">
                     Ya, Hapus
                 </button>
             </form>

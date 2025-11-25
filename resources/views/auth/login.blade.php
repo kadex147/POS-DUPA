@@ -143,7 +143,7 @@
                  onerror="this.onerror=null; this.style.display='none'; document.getElementById('logo-fallback').style.display='block';">
             
             {{-- Fallback jika logo tidak ada --}}
-            <div id="logo-fallback" class="hidden w-20 h-20 bg-gradient-to-br from-gray-500 to-gray-700 rounded-2xl items-center justify-center shadow-xl">
+            <div id="logo-fallback" class="hidden w-20 h-20 bg-linear-to-br from-gray-500 to-gray-700 rounded-2xl items-center justify-center shadow-xl">
                 <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                 </svg>
@@ -160,7 +160,7 @@
         @if ($errors->any())
             <div class="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm animate-fadeIn">
                 <div class="flex items-start gap-2">
-                    <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-5 h-5 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293z" clip-rule="evenodd"/>
                     </svg>
                     <span>{{ $errors->first() }}</span>
@@ -208,7 +208,7 @@
 
             <!-- Login Button -->
             <button type="submit" 
-                    class="btn-login w-full bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3.5 rounded-xl shadow-lg mt-6">
+                    class="btn-login w-full bg-linear-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3.5 rounded-xl shadow-lg mt-6">
                 Masuk
             </button>
         </form>
@@ -229,7 +229,7 @@
              onerror="this.style.display='none'; document.getElementById('fallback-image').style.display='flex';">
         
         {{-- Fallback jika gambar tidak ditemukan --}}
-        <div id="fallback-image" class="absolute inset-0 bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400 items-center justify-center hidden">
+        <div id="fallback-image" class="absolute inset-0 bg-linear-to-br from-gray-200 via-gray-300 to-gray-400 items-center justify-center hidden">
             <div class="text-center p-8">
                 <svg class="w-32 h-32 mx-auto text-white mb-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>

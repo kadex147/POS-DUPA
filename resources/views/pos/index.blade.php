@@ -127,9 +127,9 @@
     <!-- Right Section - Cart dengan Soft Design -->
     <div class="lg:w-96 w-full soft-card flex flex-col order-1 lg:order-2 h-[70vh] lg:h-auto shadow-lg">
         <!-- Header -->
-        <div class="p-4 border-b border-gray-100 shrink-0 bg-gradient-to-r from-gray-50 to-gray-100">
+        <div class="p-4 border-b border-gray-100 shrink-0 bg-linear-to-r from-gray-50 to-gray-100">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-800 rounded-xl flex items-center justify-center shadow-lg">
+                <div class="w-12 h-12 bg-linear-to-br from-gray-600 to-gray-800 rounded-xl flex items-center justify-center shadow-lg">
                     <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                     </svg>
@@ -160,7 +160,7 @@
 
             <button onclick="openOrderModal()" 
                     id="btnBuatPesanan"
-                    class="btn-soft w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 font-bold disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-sm lg:text-base shadow-lg disabled:shadow-none"
+                    class="btn-soft w-full py-3 bg-linear-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 font-bold disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-sm lg:text-base shadow-lg disabled:shadow-none"
                     disabled>
                 Pesan Sekarang
             </button>
@@ -207,7 +207,7 @@
         
         <button onclick="confirmOrder()" 
                 id="btnConfirmOrder"
-                class="btn-soft w-full py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 font-bold text-sm lg:text-base shadow-lg">
+                class="btn-soft w-full py-3 bg-linear-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 font-bold text-sm lg:text-base shadow-lg">
             Konfirmasi Pesanan
         </button>
     </div>
@@ -217,7 +217,7 @@
 <div id="clearCartModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-300">
     <div class="bg-white rounded-3xl p-6 w-full max-w-md relative transform transition-all duration-300 scale-95 opacity-0" id="clearCartModalContent">
         <div class="flex justify-center mb-4">
-            <div class="w-16 h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center">
+            <div class="w-16 h-16 bg-linear-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center">
                 <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                 </svg>
@@ -233,7 +233,7 @@
                 Batal
             </button>
             <button onclick="confirmClearCart()" 
-                    class="flex-1 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 active:scale-95 shadow-lg">
+                    class="flex-1 py-3 bg-linear-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 active:scale-95 shadow-lg">
                 Ya, Kosongkan
             </button>
         </div>
