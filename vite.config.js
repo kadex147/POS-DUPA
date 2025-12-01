@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
     return {
         plugins: [
             laravel({
-                input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/bluetooth-thermal-printer.js'],
+                input: ['resources/css/app.css', 'resources/js/app.js'],
                 refresh: true,
             }),
             tailwindcss(), // Plugin Tailwind v4

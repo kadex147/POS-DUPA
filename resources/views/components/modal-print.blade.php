@@ -1,4 +1,4 @@
-@vite(['resources/js/bluetooth-thermal-printer.js'])
+{{-- resources/views/components/modal-print.blade.php --}}
 
 <!-- Modal Transaksi Berhasil dengan Opsi Print -->
 <div id="postTransactionDetailModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
