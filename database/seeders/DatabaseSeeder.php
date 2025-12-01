@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         // Panggil UsersSeeder.php dan seeder lain Anda di dalam array ini
         $this->call([
             UsersSeeder::class,
+            TransactionsSeeder::class,
             // Tambahkan seeder lain Anda di sini (misalnya CategorySeeder::class)
         ]);
     }

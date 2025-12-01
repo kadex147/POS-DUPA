@@ -16,7 +16,6 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            // Ganti 'username' ke 'email' jika Anda login pakai email
             'username' => ['required', 'string'], 
             'password' => ['required', 'string'],
         ]);
@@ -24,44 +23,45 @@ class LoginController extends Controller
         // 1. Coba login dengan kredensial
         if (Auth::attempt($credentials)) {
             
-            // --- PERUBAHAN DIMULAI DI SINI ---
-            
             // 2. Ambil user yang baru saja login
             $user = Auth::user(); 
 
-            // 3. Cek statusnya
+            // 3. Cek statusnya (Sesuai kode asli Anda)
             if ($user->status !== 'aktif') {
-                // 4. Jika tidak aktif, logout lagi
                 Auth::logout(); 
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
 
-                // 5. Kembalikan ke login dengan pesan error spesifik
                 return back()->withErrors([
-                    // Ganti 'username' ke 'email' jika perlu
                     'username' => 'Akun Anda tidak aktif. Silakan hubungi administrator.', 
-                ])->onlyInput('username'); // Ganti 'username' ke 'email' jika perlu
+                ])->onlyInput('username');
             }
 
-            // --- BATAS PERUBAHAN ---
-
-            // 6. Jika aktif, lanjutkan seperti biasa
+            // 4. Jika aktif, lanjutkan
             $request->session()->regenerate();
             
-            // Redirect berdasarkan role
-            if ($user->role === 'kasir') { // Lebih aman pakai $user->role di sini
-                return redirect()->route('pos.index');
+            // --- BAGIAN YANG DIPERBAIKI ---
+            
+            // Jika user adalah KASIR, arahkan ke Dashboard Kasir (Bukan POS)
+            if ($user->role === 'kasir') {
+                // SEBELUMNYA: return redirect()->route('pos.index');
+                // SEKARANG:
+                return redirect()->route('kasir.dashboard');
             }
             
-            // Default redirect untuk role lain (misal: admin)
+            // Jika user adalah ADMIN, arahkan ke Dashboard Admin
+            if ($user->role === 'admin') {
+                return redirect()->route('dashboard');
+            }
+
+            // Default redirect (jika role tidak dikenali)
             return redirect()->route('dashboard'); 
         }
 
         // Jika Auth::attempt gagal (kredensial salah)
         return back()->withErrors([
-            // Ganti 'username' ke 'email' jika perlu
             'username' => 'Username atau password salah.', 
-        ])->onlyInput('username'); // Ganti 'username' ke 'email' jika perlu
+        ])->onlyInput('username');
     }
 
     public function logout(Request $request)

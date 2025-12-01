@@ -45,6 +45,7 @@
 
             <!-- Navigation dengan Soft Links -->
             <nav class="py-4">
+                {{-- MENU KHUSUS ADMIN --}}
                 @if(Auth::user()->role === 'admin')
                     <a href="{{ route('dashboard') }}" 
                        class="flex items-center text-gray-700 hover:text-gray-900 {{ request()->routeIs('dashboard') ? 'active' : '' }}">
@@ -87,6 +88,20 @@
                     </a>
                 @endif
 
+                {{-- MENU KHUSUS KASIR (DITAMBAHKAN) --}}
+                @if(Auth::user()->role === 'kasir')
+                    <a href="{{ route('kasir.dashboard') }}" 
+                       class="flex items-center text-gray-700 hover:text-gray-900 {{ request()->routeIs('kasir.dashboard') ? 'active' : '' }}">
+                        <div class="w-10 h-10 flex items-center justify-center rounded-xl {{ request()->routeIs('kasir.dashboard') ? 'bg-white/20' : '' }}">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                            </svg>
+                        </div>
+                        <span class="ml-3 font-medium">Dashboard</span>
+                    </a>
+                @endif
+
+                {{-- MENU UMUM (POS) --}}
                 <a href="{{ route('pos.index') }}" 
                    class="flex items-center text-gray-700 hover:text-gray-900 {{ request()->routeIs('pos.*') ? 'active' : '' }}">
                     <div class="w-10 h-10 flex items-center justify-center rounded-xl {{ request()->routeIs('pos.*') ? 'bg-white/20' : '' }}">

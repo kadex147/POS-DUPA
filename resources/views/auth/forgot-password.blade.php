@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Point Of Sale - Login</title>
+    <title>Lupa Password - Point Of Sale</title>
     
-    {{-- Vite Assets - Tailwind CSS --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <style>
-        /* Smooth fade-in animation */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -40,7 +38,6 @@
             animation: slideInLeft 0.6s ease-out;
         }
 
-        /* Background image dengan opacity */
         .login-image-container {
             position: relative;
             overflow: hidden;
@@ -64,7 +61,6 @@
             height: 100%;
         }
         
-        /* Input dengan icon styling */
         .input-with-icon {
             position: relative;
         }
@@ -87,14 +83,13 @@
             color: #6b7280;
         }
 
-        /* Button modern hover */
-        .btn-login {
+        .btn-submit {
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
         }
 
-        .btn-login::before {
+        .btn-submit::before {
             content: '';
             position: absolute;
             top: 0;
@@ -105,20 +100,19 @@
             transition: left 0.5s ease;
         }
 
-        .btn-login:hover::before {
+        .btn-submit:hover::before {
             left: 100%;
         }
 
-        .btn-login:hover {
+        .btn-submit:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(107, 114, 128, 0.4);
         }
 
-        .btn-login:active {
+        .btn-submit:active {
             transform: translateY(0);
         }
 
-        /* Logo pulse animation on hover */
         .logo-container:hover img,
         .logo-container:hover div {
             animation: pulse 0.6s ease-in-out;
@@ -132,7 +126,6 @@
 </head>
 <body class="flex min-h-screen bg-gray-50">
     
-    <!-- Login Container - Modern & Clean -->
     <div class="w-full lg:w-[380px] bg-white px-8 py-10 flex flex-col lg:shadow-2xl relative z-10 animate-slideInLeft">
         
         {{-- Logo --}}
@@ -142,7 +135,6 @@
                  class="w-30 h-30 object-contain transition-transform duration-300"
                  onerror="this.onerror=null; this.style.display='none'; document.getElementById('logo-fallback').style.display='block';">
             
-            {{-- Fallback jika logo tidak ada --}}
             <div id="logo-fallback" class="hidden w-20 h-20 bg-linear-to-br from-gray-500 to-gray-700 rounded-2xl items-center justify-center shadow-xl">
                 <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
@@ -152,11 +144,11 @@
 
         {{-- Title --}}
         <div class="text-center mb-8">
-            <h1 class="text-2xl text-gray-800 font-bold mb-1">Point Of Sale</h1>
-            <p class="text-sm text-gray-500">Masuk ke akun Anda</p>
+            <h1 class="text-2xl text-gray-800 font-bold mb-1">Lupa Password</h1>
+            <p class="text-sm text-gray-500">Masukkan email Anda untuk reset password</p>
         </div>
 
-        {{-- Success Alert (untuk pesan setelah reset password) --}}
+        {{-- Success Alert --}}
         @if (session('success'))
             <div class="bg-green-50 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded-lg mb-6 text-sm animate-fadeIn">
                 <div class="flex items-start gap-2">
@@ -181,56 +173,44 @@
         @endif
 
         {{-- Form --}}
-        <form method="POST" action="{{ route('login') }}" class="space-y-5">
+        <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
             @csrf
             
-            <!-- Username Input dengan Icon -->
+            <!-- Email Input -->
             <div>
-                <label for="username" class="block text-sm font-semibold text-gray-700 mb-2">Username</label>
+                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
                 <div class="input-with-icon">
-                    <input type="text" 
-                           id="username" 
-                           name="username" 
-                           value="{{ old('username') }}"
+                    <input type="email" 
+                           id="email" 
+                           name="email" 
+                           value="{{ old('email') }}"
                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-gray-500 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 transition-all duration-300"
-                           placeholder="Masukkan username"
+                           placeholder="Masukkan email Anda"
                            required 
                            autofocus>
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
                     </svg>
                 </div>
             </div>
 
-            <!-- Password Input dengan Icon -->
-            <div>
-                <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
-                <div class="input-with-icon">
-                    <input type="password" 
-                           id="password" 
-                           name="password"
-                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-gray-500 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 transition-all duration-300"
-                           placeholder="Masukkan password"
-                           required>
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
-                    </svg>
-                </div>
-            </div>
-
-            <!-- Forgot Password Link -->
-            <div class="text-right">
-                <a href="{{ route('password.request') }}" class="text-sm text-gray-600 hover:text-gray-800 hover:underline transition-colors duration-300">
-                    Lupa Password?
-                </a>
-            </div>
-
-            <!-- Login Button -->
+            <!-- Submit Button -->
             <button type="submit" 
-                    class="btn-login w-full bg-linear-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3.5 rounded-xl shadow-lg mt-6">
-                Masuk
+                    class="btn-submit w-full bg-linear-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3.5 rounded-xl shadow-lg mt-6">
+                Kirim Link Reset Password
             </button>
         </form>
+
+        {{-- Back to Login --}}
+        <div class="mt-6 text-center">
+            <a href="{{ route('login') }}" class="text-sm text-gray-600 hover:text-gray-800 transition-colors duration-300 inline-flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Kembali ke Login
+            </a>
+        </div>
 
         {{-- Footer --}}
         <div class="mt-auto pt-8">
@@ -240,14 +220,13 @@
         </div>
     </div>
 
-    <!-- Image Section - Hidden on Mobile, Visible on Desktop -->
+    <!-- Image Section -->
     <div class="hidden lg:flex flex-1 login-image-container items-center justify-center relative animate-fadeIn">
         <img src="{{ asset('storage/images/login-bg.jpg') }}" 
              alt="Background" 
              class="login-image absolute inset-0 w-full h-full object-cover"
              onerror="this.style.display='none'; document.getElementById('fallback-image').style.display='flex';">
         
-        {{-- Fallback jika gambar tidak ditemukan --}}
         <div id="fallback-image" class="absolute inset-0 bg-linear-to-br from-gray-200 via-gray-300 to-gray-400 items-center justify-center hidden">
             <div class="text-center p-8">
                 <svg class="w-32 h-32 mx-auto text-white mb-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">

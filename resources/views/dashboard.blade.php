@@ -9,7 +9,7 @@
         <!-- Total Pemasukan -->
         <div class="stats-card-soft">
             <div class="flex items-center gap-4">
-                <div class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl flex items-center justify-center shrink-0 shadow-lg">
+                <div class="w-14 h-14 lg:w-16 lg:h-16 bg-linear-to-br from-green-400 to-emerald-600 rounded-2xl flex items-center justify-center shrink-0 shadow-lg">
                     <svg class="w-7 h-7 lg:w-8 lg:h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
                     </svg>
@@ -24,7 +24,7 @@
         <!-- Produk Terjual -->
         <div class="stats-card-soft">
             <div class="flex items-center gap-4">
-                <div class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-2xl flex items-center justify-center shrink-0 shadow-lg">
+                <div class="w-14 h-14 lg:w-16 lg:h-16 bg-linear-to-br from-blue-400 to-indigo-600 rounded-2xl flex items-center justify-center shrink-0 shadow-lg">
                     <svg class="w-7 h-7 lg:w-8 lg:h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M5 8a3 3 0 013-3h8a3 3 0 013 3v10a3 3 0 01-3 3H8a3 3 0 01-3-3V8zm3 0a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V9a1 1 0 00-1-1H8z" clip-rule="evenodd" />
                         <path fill-rule="evenodd" d="M9 11a1 1 0 011-1h4a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
@@ -40,7 +40,7 @@
         <!-- Jumlah Pesanan -->
         <div class="stats-card-soft sm:col-span-2 lg:col-span-1">
             <div class="flex items-center gap-4">
-                <div class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-purple-400 to-pink-600 rounded-2xl flex items-center justify-center shrink-0 shadow-lg">
+                <div class="w-14 h-14 lg:w-16 lg:h-16 bg-linear-to-br from-purple-400 to-pink-600 rounded-2xl flex items-center justify-center shrink-0 shadow-lg">
                     <svg class="w-7 h-7 lg:w-8 lg:h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z"/>
                     </svg>
@@ -54,7 +54,7 @@
     </div>
 
     <!-- Charts Section - Responsive Grid -->
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6">
+     <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6">
         <!-- Income Chart -->
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100">
             <div class="p-4 lg:p-6">
@@ -62,6 +62,7 @@
                     <h3 class="text-base lg:text-lg font-bold text-gray-800">Pendapatan</h3>
                     
                     <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                        <!-- Tombol Filter Existing -->
                         <a href="{{ route('dashboard', ['period' => '7days']) }}" 
                            class="btn-soft px-3 py-1.5 text-xs lg:text-sm {{ $period === '7days' ? 'bg-gray-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                             7 Hari
@@ -78,9 +79,18 @@
                                 class="btn-soft px-3 py-1.5 text-xs lg:text-sm {{ $period === 'custom' ? 'bg-gray-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                             Custom
                         </button>
+                        
+                        <!-- TOMBOL CETAK BARU -->
+                        <!-- Menggunakan request()->query() agar filter custom ikut terbawa -->
+                        <a href="{{ route('dashboard.print', request()->query()) }}" target="_blank"
+                           class="btn-soft px-3 py-1.5 text-xs lg:text-sm bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-1 shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                            </svg>
+                            Cetak
+                        </a>
                     </div>
                 </div>
-
                 <!-- Custom Filter Form dengan Soft Design -->
                 <div id="customFilterForm" class="mb-4 {{ $period === 'custom' ? '' : 'hidden' }}">
                     <form method="GET" action="{{ route('dashboard') }}" class="soft-card bg-gray-50 p-4 border border-gray-100">
@@ -188,61 +198,102 @@
     @endforelse
 </div>
 
-<!-- Desktop: Table View -->
-<div class="hidden lg:block table-soft">
-    <table class="min-w-full divide-y divide-gray-200">
-        <thead>
-            <tr>
-                <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Invoice</th>
-                <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tanggal</th>
-                <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kasir</th>
-                <th scope="col" class="px-6 py-3 text-right text-sm font-semibold text-gray-700">Total</th>
-                <th scope="col" class="px-6 py-3 text-center text-sm font-semibold text-gray-700">Aksi</th>
-            </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-            @forelse($recentTransactions as $transaction)
-            <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="#" onclick="showTransactionDetails(event, {{ $transaction->id }})" 
-                       class="text-blue-600 hover:text-blue-800 font-semibold hover:underline">
-                        {{ $transaction->invoice_number }}
-                    </a>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {{ $transaction->created_at->format('d M Y, H:i') }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {{ $transaction->user->username }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-green-600">
-                    + Rp {{ number_format($transaction->total, 0, ',', '.') }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
-                    <button onclick="confirmDeleteTransaction({{ $transaction->id }}, '{{ addslashes($transaction->invoice_number) }}')" 
-                            class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all inline-flex items-center justify-center">
+ <!-- Recent Transactions Table -->
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+        <!-- Header Tabel -->
+        <div class="p-6 border-b border-gray-100">
+            <h3 class="text-lg font-bold text-gray-800">Riwayat Transaksi</h3>
+        </div>
+
+        <!-- Tabel -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-linear-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Invoice</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tanggal</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kasir</th>
+                        <th class="px-6 py-3 text-right text-sm font-semibold text-gray-700">Total</th>
+                        <th class="px-6 py-3 text-center text-sm font-semibold text-gray-700">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    @forelse($recentTransactions as $transaction)
+                    <tr class="hover:bg-gray-50 transition-colors duration-200">
+                        <td class="px-6 py-4 text-sm font-medium">
+                            <a href="#" onclick="showTransactionDetails(event, {{ $transaction->id }})" 
+                               class="text-blue-600 hover:text-blue-800 hover:underline">
+                                {{ $transaction->invoice_number }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-600">
+                            {{ $transaction->created_at->format('d M Y, H:i') }}
+                        </td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-600">
+                            {{ $transaction->user->username ?? '-' }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-right font-bold text-green-600">
+                            Rp {{ number_format($transaction->total, 0, ',', '.') }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-center">
+                            <button onclick="confirmDeleteTransaction({{ $transaction->id }}, '{{ $transaction->invoice_number }}')" class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all inline-block">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-10 text-center text-gray-400 text-sm">Belum ada transaksi</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination dengan Soft Design -->
+        <div class="pagination-soft p-4 lg:px-6 border-t border-gray-100 bg-gray-50">
+            <div class="flex items-center justify-center gap-3">
+                @if($recentTransactions->onFirstPage())
+                    <button disabled class="text-gray-300 cursor-not-allowed">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
                         </svg>
                     </button>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-400">
-                    Belum ada transaksi
-                </td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
+                @else
+                    <a href="{{ $recentTransactions->appends(request()->query())->previousPageUrl() }}" class="text-gray-600 hover:text-gray-800 hover:bg-gray-100 p-1 rounded-full transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                @endif
+
+                <span class="current-page px-3 py-1 bg-white border border-gray-200 rounded-md text-sm font-medium text-gray-700 shadow-sm">{{ $recentTransactions->currentPage() }}</span>
+
+                @if($recentTransactions->hasMorePages())
+                    <a href="{{ $recentTransactions->appends(request()->query())->nextPageUrl() }}" class="text-gray-600 hover:text-gray-800 hover:bg-gray-100 p-1 rounded-full transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                @else
+                    <button disabled class="text-gray-300 cursor-not-allowed">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                @endif
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal Konfirmasi Hapus Transaksi -->
 <div id="deleteTransactionModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-300">
     <div class="bg-white rounded-3xl p-6 w-full max-w-md relative transform transition-all duration-300 scale-95 opacity-0" id="deleteTransactionModalContent">
         <div class="flex justify-center mb-4">
-            <div class="w-16 h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center">
+            <div class="w-16 h-16 bg-linear-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center">
                 <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
@@ -262,7 +313,7 @@
             </button>
             <button onclick="deleteTransaction()" 
                     id="btnConfirmDelete"
-                    class="flex-1 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 active:scale-95 shadow-lg">
+                    class="flex-1 py-3 bg-linear-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 active:scale-95 shadow-lg">
                 Ya, Hapus
             </button>
         </div>
@@ -375,46 +426,6 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 </script>
-
-            <!-- Pagination dengan Soft Design -->
-            @if($recentTransactions->hasPages())
-            <div class="pagination-soft mt-4 pt-4 border-t border-gray-100">
-                <div class="flex items-center justify-center gap-3">
-                    @if($recentTransactions->onFirstPage())
-                        <button disabled class="text-gray-300 cursor-not-allowed">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                    @else
-                        <a href="{{ $recentTransactions->previousPageUrl() }}" class="hover:bg-gray-50">
-                            <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                        </a>
-                    @endif
-
-                    <span class="current-page px-3 py-1">{{ $recentTransactions->currentPage() }}</span>
-
-                    @if($recentTransactions->hasMorePages())
-                        <a href="{{ $recentTransactions->nextPageUrl() }}" class="hover:bg-gray-50">
-                            <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                        </a>
-                    @else
-                        <button disabled class="text-gray-300 cursor-not-allowed">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                    @endif
-                </div>
-            </div>
-            @endif
-        </div>
-    </div>
-</div>
 
 {{-- Include Modal Print Component --}}
 @include('components.modal-print')
