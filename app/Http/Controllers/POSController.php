@@ -152,7 +152,93 @@ class POSController extends Controller
     }
 
     /**
-     * Check stock availability
+     * Display transaction detail (show)
+     * Route: GET /transactions/{id}
+     */
+    public function show($id)
+    {
+        try {
+            $transaction = Transaction::with(['items.product', 'user'])
+                ->findOrFail($id);
+
+            // Authorization: Admin bisa lihat semua, Kasir hanya milik sendiri
+            if (auth()->user()->role !== 'admin' && $transaction->user_id !== auth()->id()) {
+                return response()->json([
+                    'error' => 'Unauthorized',
+                ], 403);
+            }
+
+            return response()->json($transaction);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 404);
+        }
+    }
+
+    /**
+     * Delete transaction and restore product stock (destroy)
+     * Moved from DashboardController - Best Practice: All transaction CRUD in one controller
+     * Route: DELETE /transactions/{id}
+     */
+    public function destroy($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            // Find transaction with items
+            $transaction = Transaction::with('items.product')->find($id);
+
+            if (!$transaction) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Transaksi tidak ditemukan'
+                ], 404);
+            }
+
+            // Authorization: Only Admin can delete
+            if (auth()->user()->role !== 'admin') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized. Hanya Admin yang dapat menghapus transaksi.'
+                ], 403);
+            }
+
+            // Restore stock for each item
+            foreach ($transaction->items as $item) {
+                if ($item->product) {
+                    $item->product->increment('stock', $item->quantity);
+                }
+            }
+
+            // Delete transaction items
+            $transaction->items()->delete();
+
+            // Delete transaction
+            $transaction->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaksi berhasil dihapus dan stock dikembalikan'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            \Log::error('Error deleting transaction: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus transaksi: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Check product stock availability
      */
     public function checkStock(Request $request)
     {

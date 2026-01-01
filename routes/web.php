@@ -36,19 +36,10 @@ Route::middleware(['auth'])->group(function () {
         
         // Route untuk cetak laporan
         Route::get('/dashboard/print', [DashboardController::class, 'printReport'])->name('dashboard.print');
-
-        // Transaction routes
-        Route::get('/transaction-details/{transaction}', [DashboardController::class, 'getTransactionDetails'])
-             ->name('transaction.details');
-        
-        Route::delete('/transactions/{id}', [DashboardController::class, 'deleteTransaction'])
-             ->name('transactions.destroy');
         
         // Product stock routes
         Route::post('/products/{product}/update-stock', [ProductController::class, 'updateStock'])
             ->name('products.updateStock');
-        Route::post('/pos/check-stock', [POSController::class, 'checkStock'])
-            ->name('pos.checkStock');
         
         // Resource routes
         Route::resource('categories', CategoryController::class);
@@ -64,9 +55,41 @@ Route::middleware(['auth'])->group(function () {
         // Transaction details untuk kasir
         Route::get('/kasir/transaction-details/{transaction}', [DashboardController::class, 'kasirTransactionDetails'])
              ->name('kasir.transaction.details');
+        
+        // Route untuk cetak laporan kasir
+        Route::get('/kasir/dashboard/print', [DashboardController::class, 'printKasirReport'])->name('kasir.dashboard.print');
     });
     
-    // POS Routes (Bisa diakses Admin & Kasir)
+    // ==============================================================
+    // TRANSACTION ROUTES (Resource Controller Pattern) 
+    // Bisa diakses oleh Admin & Kasir
+    // ==============================================================
+    
+    // POS/Transaction Resource Routes
+    // Using RESTful Resource Controller pattern for better organization
+    Route::prefix('transactions')->name('transactions.')->group(function () {
+        // GET /transactions - Display POS page with products
+        Route::get('/', [POSController::class, 'index'])->name('index');
+        
+        // POST /transactions - Create new transaction (checkout)
+        Route::post('/', [POSController::class, 'store'])->name('store');
+        
+        // GET /transactions/{id} - Show transaction details (for modal)
+        Route::get('/{id}', [POSController::class, 'show'])->name('show');
+        
+        // DELETE /transactions/{id} - Delete transaction (Admin only, handled in controller)
+        Route::delete('/{id}', [POSController::class, 'destroy'])->name('destroy');
+        
+        // POST /transactions/check-stock - Check product stock availability (AJAX)
+        Route::post('/check-stock', [POSController::class, 'checkStock'])->name('checkStock');
+    });
+    
+    // Backward compatibility - Keep old POS routes pointing to new transaction routes
     Route::get('/pos', [POSController::class, 'index'])->name('pos.index');
     Route::post('/pos', [POSController::class, 'store'])->name('pos.store');
+    Route::post('/pos/check-stock', [POSController::class, 'checkStock'])->name('pos.checkStock');
+    
+    // Transaction details route (untuk modal) - backward compatibility
+    Route::get('/transaction-details/{transaction}', [POSController::class, 'show'])
+         ->name('transaction.details');
 });

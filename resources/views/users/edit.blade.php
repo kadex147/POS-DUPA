@@ -3,6 +3,27 @@
 @section('title', 'Edit User - Point of Sale')
 
 @section('content')
+<style>
+    /* Force gray color for radio buttons - override browser default */
+    input[type="radio"][name="role"]:checked,
+    input[type="radio"][name="status"]:checked {
+        accent-color: #4b5563 !important; /* gray-600 */
+        background-color: #4b5563 !important;
+        border-color: #4b5563 !important;
+    }
+    
+    input[type="radio"][name="role"]:focus,
+    input[type="radio"][name="status"]:focus {
+        ring-color: #6b7280 !important; /* gray-500 */
+        box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.2) !important;
+    }
+    
+    input[type="radio"][name="role"],
+    input[type="radio"][name="status"] {
+        border-color: #d1d5db !important; /* gray-300 */
+    }
+</style>
+
 <div class="max-w-4xl">
     <h1 class="text-xl lg:text-2xl font-bold text-gray-800 mb-4 lg:mb-6">Edit User</h1>
 
@@ -76,47 +97,86 @@
             <!-- Role -->
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-3">Role</label>
+                
+                @if($isLastActiveAdmin)
+                    <!-- Warning jika user adalah satu-satunya admin AKTIF -->
+                    <div class="alert-soft alert-warning-soft mb-3 text-xs">
+                        <div class="flex items-start gap-2">
+                            <svg class="w-4 h-4 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Anda adalah satu-satunya admin aktif. Role tidak dapat diubah.</span>
+                        </div>
+                    </div>
+                @endif
+                
                 <div class="space-y-3">
-                    <label class="flex items-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-400 transition-all cursor-pointer {{ old('role', $user->role) === 'admin' ? 'bg-gray-50 border-gray-600' : '' }}">
+                    <label class="flex items-center p-3 rounded-xl border-2 transition-all {{ $isLastActiveAdmin ? 'border-gray-300 bg-gray-50 cursor-not-allowed opacity-60' : 'border-gray-200 hover:border-gray-400 cursor-pointer' }} {{ old('role', $user->role) === 'admin' ? 'bg-gray-50 border-gray-600' : '' }}">
                         <input type="radio" 
                                name="role" 
                                value="admin" 
                                {{ old('role', $user->role) === 'admin' ? 'checked' : '' }}
-                               class="w-4 h-4 text-gray-600 focus:ring-gray-500">
+                               {{ $isLastActiveAdmin ? 'disabled' : '' }}
+                               class="w-4 h-4 text-gray-600 focus:ring-gray-500 {{ $isLastActiveAdmin ? 'cursor-not-allowed' : '' }}">
                         <span class="ml-3 text-sm lg:text-base text-gray-700 font-medium">Admin</span>
                     </label>
-                    <label class="flex items-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-400 transition-all cursor-pointer {{ old('role', $user->role) === 'kasir' ? 'bg-gray-50 border-gray-600' : '' }}">
+                    <label class="flex items-center p-3 rounded-xl border-2 transition-all {{ $isLastActiveAdmin ? 'border-gray-300 bg-gray-50 cursor-not-allowed opacity-60' : 'border-gray-200 hover:border-gray-400 cursor-pointer' }} {{ old('role', $user->role) === 'kasir' ? 'bg-gray-50 border-gray-600' : '' }}">
                         <input type="radio" 
                                name="role" 
                                value="kasir" 
                                {{ old('role', $user->role) === 'kasir' ? 'checked' : '' }}
-                               class="w-4 h-4 text-gray-600 focus:ring-gray-500">
+                               {{ $isLastActiveAdmin ? 'disabled' : '' }}
+                               class="w-4 h-4 text-gray-600 focus:ring-gray-500 {{ $isLastActiveAdmin ? 'cursor-not-allowed' : '' }}">
                         <span class="ml-3 text-sm lg:text-base text-gray-700 font-medium">Kasir</span>
                     </label>
                 </div>
+                
+                @if($isLastActiveAdmin)
+                    <!-- Hidden input untuk memastikan role tetap admin -->
+                    <input type="hidden" name="role" value="admin">
+                @endif
             </div>
 
             <!-- Status -->
-            <div>
+           <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-3">Status</label>
+                
+                @if($isLastActiveAdmin)
+                    <div class="alert-soft alert-warning-soft mb-3 text-xs">
+                        <div class="flex items-start gap-2">
+                            <svg class="w-4 h-4 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Anda adalah satu-satunya admin aktif. Status tidak dapat diubah.</span>
+                        </div>
+                    </div>
+                @endif
+                
                 <div class="space-y-3">
-                    <label class="flex items-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-400 transition-all cursor-pointer {{ old('status', $user->status) === 'aktif' ? 'bg-gray-50 border-gray-600' : '' }}">
+                    <label class="flex items-center p-3 rounded-xl border-2 transition-all {{ $isLastActiveAdmin ? 'border-gray-300 bg-gray-50 cursor-not-allowed opacity-60' : 'border-gray-200 hover:border-gray-400 cursor-pointer' }} {{ old('status', $user->status) === 'aktif' ? 'bg-gray-50 border-gray-600' : '' }}">
                         <input type="radio" 
                                name="status" 
                                value="aktif" 
                                {{ old('status', $user->status) === 'aktif' ? 'checked' : '' }}
-                               class="w-4 h-4 text-gray-600 focus:ring-gray-500">
+                               {{ $isLastActiveAdmin ? 'disabled' : '' }}
+                               class="w-4 h-4 text-gray-600 focus:ring-gray-500 {{ $isLastActiveAdmin ? 'cursor-not-allowed' : '' }}">
                         <span class="ml-3 text-sm lg:text-base text-gray-700 font-medium">Aktif</span>
                     </label>
-                    <label class="flex items-center p-3 rounded-xl border-2 border-gray-200 hover:border-gray-400 transition-all cursor-pointer {{ old('status', $user->status) === 'tidak_aktif' ? 'bg-gray-50 border-gray-600' : '' }}">
+
+                    <label class="flex items-center p-3 rounded-xl border-2 transition-all {{ $isLastActiveAdmin ? 'border-gray-300 bg-gray-50 cursor-not-allowed opacity-60' : 'border-gray-200 hover:border-gray-400 cursor-pointer' }} {{ old('status', $user->status) === 'tidak_aktif' ? 'bg-gray-50 border-gray-600' : '' }}">
                         <input type="radio" 
                                name="status" 
                                value="tidak_aktif" 
                                {{ old('status', $user->status) === 'tidak_aktif' ? 'checked' : '' }}
-                               class="w-4 h-4 text-gray-600 focus:ring-gray-500">
+                               {{ $isLastActiveAdmin ? 'disabled' : '' }}
+                               class="w-4 h-4 text-gray-600 focus:ring-gray-500 {{ $isLastActiveAdmin ? 'cursor-not-allowed' : '' }}">
                         <span class="ml-3 text-sm lg:text-base text-gray-700 font-medium">Tidak Aktif</span>
                     </label>
                 </div>
+                
+                @if($isLastActiveAdmin)
+                    <input type="hidden" name="status" value="aktif">
+                @endif
             </div>
         </div>
 

@@ -164,42 +164,85 @@
         </div>
     </div>
 
-<!-- Tambahkan di bagian Recent Transactions Table -->
+<!-- Mobile: Card View dengan Header dan Pagination - HANYA TAMPIL DI MOBILE -->
+<div class="block lg:hidden mb-6">
+    <!-- Header Riwayat Transaksi Mobile -->
+    <div class="mb-4">
+        <h3 class="text-lg font-bold text-gray-800">Riwayat Transaksi</h3>
+    </div>
 
-<!-- Mobile: Card View -->
-<div class="block lg:hidden space-y-3">
-    @forelse($recentTransactions as $transaction)
-    <div class="cart-item-soft">
-        <div class="flex justify-between items-start mb-2">
-            <a href="#" onclick="showTransactionDetails(event, {{ $transaction->id }})" 
-               class="text-blue-600 hover:text-blue-800 font-semibold text-sm hover:underline">
-                {{ $transaction->invoice_number }}
-            </a>
-            <span class="text-xs text-gray-500">{{ $transaction->created_at->format('d M Y') }}</span>
+    <!-- Cards -->
+    <div class="space-y-3 mb-4">
+        @forelse($recentTransactions as $transaction)
+        <div class="cart-item-soft">
+            <div class="flex justify-between items-start mb-2">
+                <a href="#" onclick="showTransactionDetails(event, {{ $transaction->id }})" 
+                   class="text-blue-600 hover:text-blue-800 font-semibold text-sm hover:underline">
+                    {{ $transaction->invoice_number }}
+                </a>
+                <span class="text-xs text-gray-500">{{ $transaction->created_at->format('d M Y') }}</span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+                <span class="text-gray-600">{{ $transaction->user->username }}</span>
+                <span class="font-bold text-green-600">+ Rp {{ number_format($transaction->total, 0, ',', '.') }}</span>
+            </div>
+            <div class="mt-2 pt-2 border-t border-gray-100">
+                <button onclick="confirmDeleteTransaction({{ $transaction->id }}, '{{ addslashes($transaction->invoice_number) }}')" 
+                        class="text-red-600 hover:text-red-800 text-xs font-semibold flex items-center gap-1 hover:bg-red-50 px-2 py-1 rounded-lg transition-all">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    Hapus
+                </button>
+            </div>
         </div>
-        <div class="flex justify-between items-center text-sm">
-            <span class="text-gray-600">{{ $transaction->user->username }}</span>
-            <span class="font-bold text-green-600">+ Rp {{ number_format($transaction->total, 0, ',', '.') }}</span>
+        @empty
+        <div class="text-center py-8 bg-white rounded-xl border border-gray-100">
+            <p class="text-gray-400 text-sm">Belum ada transaksi</p>
         </div>
-        <div class="mt-2 pt-2 border-t border-gray-100">
-            <button onclick="confirmDeleteTransaction({{ $transaction->id }}, '{{ addslashes($transaction->invoice_number) }}')" 
-                    class="text-red-600 hover:text-red-800 text-xs font-semibold flex items-center gap-1 hover:bg-red-50 px-2 py-1 rounded-lg transition-all">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-                Hapus
-            </button>
+        @endforelse
+    </div>
+
+    <!-- Pagination Mobile -->
+    @if($recentTransactions->hasPages())
+    <div class="pagination-soft bg-white p-4 rounded-xl border border-gray-100">
+        <div class="flex items-center justify-center gap-3">
+            @if($recentTransactions->onFirstPage())
+                <button disabled class="text-gray-300 cursor-not-allowed">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            @else
+                <a href="{{ $recentTransactions->appends(request()->query())->previousPageUrl() }}" class="text-gray-600 hover:text-gray-800 hover:bg-gray-100 p-1 rounded-full transition-colors">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
+            @endif
+
+            <span class="current-page px-3 py-1 bg-gray-50 border border-gray-200 rounded-md text-sm font-medium text-gray-700">{{ $recentTransactions->currentPage() }}</span>
+
+            @if($recentTransactions->hasMorePages())
+                <a href="{{ $recentTransactions->appends(request()->query())->nextPageUrl() }}" class="text-gray-600 hover:text-gray-800 hover:bg-gray-100 p-1 rounded-full transition-colors">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
+            @else
+                <button disabled class="text-gray-300 cursor-not-allowed">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            @endif
         </div>
     </div>
-    @empty
-    <div class="text-center py-8">
-        <p class="text-gray-400 text-sm">Belum ada transaksi</p>
-    </div>
-    @endforelse
+    @endif
 </div>
 
- <!-- Recent Transactions Table -->
-    <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+ <!-- Desktop: Recent Transactions Table - HANYA TAMPIL DI DESKTOP -->
+    <div class="hidden lg:block bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
         <!-- Header Tabel -->
         <div class="p-6 border-b border-gray-100">
             <h3 class="text-lg font-bold text-gray-800">Riwayat Transaksi</h3>

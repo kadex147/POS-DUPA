@@ -4,10 +4,23 @@
 
 @section('content')
 <div class="space-y-6">
-    <!-- Header Info Kasir -->
+    <!-- Header Info Kasir dengan Tombol Cetak -->
     <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
-        <h2 class="text-2xl font-bold mb-2">Selamat Datang, {{ auth()->user()->name }}!</h2>
-        <p class="text-blue-100">Berikut adalah ringkasan aktivitas Anda dalam 7 hari terakhir</p>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h2 class="text-2xl font-bold mb-2">Selamat Datang, {{ auth()->user()->name }}!</h2>
+                <p class="text-blue-100">Berikut adalah ringkasan aktivitas Anda dalam 7 hari terakhir</p>
+            </div>
+            <!-- Tombol Cetak Laporan -->
+            <a href="{{ route('kasir.dashboard.print') }}" 
+               target="_blank"
+               class="flex items-center gap-2 bg-white text-blue-600 px-4 py-2.5 rounded-lg hover:bg-blue-50 transition-colors shadow-md font-semibold text-sm whitespace-nowrap">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                </svg>
+                Cetak Laporan
+            </a>
+        </div>
     </div>
 
     <!-- Stats Cards - Responsive Grid dengan Soft Design -->

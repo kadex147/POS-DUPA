@@ -1,6 +1,5 @@
 {{-- resources/views/components/modal-print.blade.php --}}
 
-<!-- Modal Transaksi Berhasil dengan Opsi Print -->
 <div id="postTransactionDetailModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-lg shadow-xl p-4 lg:p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
         <button onclick="closePostTransactionModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
@@ -9,7 +8,6 @@
             </svg>
         </button>
         
-        <!-- Success Icon -->
         <div class="flex justify-center mb-4">
             <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
                 <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,14 +54,13 @@
             </div>
         </div>
         
-        <!-- Tombol Aksi -->
         <div class="space-y-2">
             <button onclick="printReceiptAndClose()" 
                     class="w-full py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition font-semibold flex items-center justify-center gap-2 text-sm lg:text-base">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                 </svg>
-                Cetak Struk
+                <span class="button-text">Cetak Struk</span>
             </button>
             
             <button onclick="closePostTransactionModal()" 
@@ -74,7 +71,6 @@
     </div>
 </div>
 
-<!-- Modal Detail Transaksi (untuk history) -->
 <div id="transactionPrintModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-lg shadow-xl p-4 lg:p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
         <button onclick="closePrintModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
@@ -120,14 +116,13 @@
             </div>
         </div>
         
-        <!-- Tombol Aksi -->
         <div class="space-y-2">
             <button onclick="printReceiptAndCloseHistory()" 
                     class="w-full py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition font-semibold flex items-center justify-center gap-2 text-sm lg:text-base">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                 </svg>
-                Cetak Struk
+                <span class="button-text">Cetak Struk</span>
             </button>
             
             <button onclick="closePrintModal()" 
@@ -138,18 +133,35 @@
     </div>
 </div>
 
-<!-- Include Bluetooth Printer Script -->
-<script src="{{ asset('js/bluetooth-thermal-printer.js') }}"></script>
-
 <script>
-// Global variable untuk menyimpan data transaksi
-window.currentTransaction = null;
+/**
+ * Deteksi apakah device adalah mobile
+ */
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+           window.innerWidth <= 768;
+}
+
+/**
+ * Update text tombol cetak berdasarkan device
+ */
+function updatePrintButtonText() {
+    const isMobile = isMobileDevice();
+    const buttonText = isMobile ? 'Simpan sebagai PDF' : 'Cetak Struk';
+    
+    // Update semua tombol cetak
+    document.querySelectorAll('.button-text').forEach(span => {
+        span.textContent = buttonText;
+    });
+}
 
 /**
  * Menampilkan modal transaksi berhasil (setelah checkout)
  */
 window.showPostTransactionModal = function(transactionData) {
-    window.currentTransaction = transactionData;
+    // 1. Simpan data transaksi ke atribut DOM modal (menghindari variabel global)
+    const modal = document.getElementById('postTransactionDetailModal');
+    modal.setAttribute('data-transaction', JSON.stringify(transactionData));
     
     // Format data
     const formattedDate = new Date(transactionData.created_at).toLocaleString('id-ID', {
@@ -178,12 +190,12 @@ window.showPostTransactionModal = function(transactionData) {
         itemsBody.innerHTML += row;
     });
 
+    // Update text tombol berdasarkan device
+    updatePrintButtonText();
+
     // Tampilkan modal
-    const modal = document.getElementById('postTransactionDetailModal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
-    
-    // TIDAK ADA setTimeout untuk auto close
 };
 
 /**
@@ -191,9 +203,11 @@ window.showPostTransactionModal = function(transactionData) {
  */
 window.closePostTransactionModal = function() {
     const modal = document.getElementById('postTransactionDetailModal');
+    
+    // Bersihkan data dan sembunyikan modal
+    modal.removeAttribute('data-transaction');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
-    window.currentTransaction = null;
     
     // Reload halaman setelah modal ditutup untuk update stock
     window.location.reload();
@@ -203,7 +217,9 @@ window.closePostTransactionModal = function() {
  * Membuka modal print (dari history/dashboard)
  */
 window.openPrintModal = function(transactionData) {
-    window.currentTransaction = transactionData;
+    // 1. Simpan data transaksi ke atribut DOM modal
+    const modal = document.getElementById('transactionPrintModal');
+    modal.setAttribute('data-transaction', JSON.stringify(transactionData));
     
     // Format data
     const formattedDate = new Date(transactionData.created_at).toLocaleString('id-ID', {
@@ -232,8 +248,10 @@ window.openPrintModal = function(transactionData) {
         itemsBody.innerHTML += row;
     });
 
+    // Update text tombol berdasarkan device
+    updatePrintButtonText();
+
     // Tampilkan modal
-    const modal = document.getElementById('transactionPrintModal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
 };
@@ -243,9 +261,11 @@ window.openPrintModal = function(transactionData) {
  */
 window.closePrintModal = function() {
     const modal = document.getElementById('transactionPrintModal');
+    
+    // Bersihkan data dan sembunyikan
+    modal.removeAttribute('data-transaction');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
-    window.currentTransaction = null;
 };
 
 /**
@@ -272,14 +292,35 @@ window.printReceiptAndCloseHistory = function() {
 
 /**
  * Mencetak struk thermal 58mm (universal function)
+ * Mengambil data dari modal yang sedang aktif (visible)
+ * Untuk mobile: Save as PDF
+ * Untuk desktop: Print
  */
 window.printReceipt = function() {
-    if (!window.currentTransaction) {
-        alert('Data transaksi tidak tersedia');
+    // Cari modal mana yang sedang aktif (tidak hidden)
+    const postModal = document.getElementById('postTransactionDetailModal');
+    const historyModal = document.getElementById('transactionPrintModal');
+    let activeModal = null;
+
+    if (!postModal.classList.contains('hidden')) {
+        activeModal = postModal;
+    } else if (!historyModal.classList.contains('hidden')) {
+        activeModal = historyModal;
+    }
+
+    if (!activeModal) {
+        alert('Modal transaksi tidak ditemukan atau tertutup.');
         return;
     }
 
-    const transaction = window.currentTransaction;
+    // Ambil data dari atribut 'data-transaction'
+    const transactionJson = activeModal.getAttribute('data-transaction');
+    if (!transactionJson) {
+        alert('Data transaksi tidak tersedia pada modal.');
+        return;
+    }
+
+    const transaction = JSON.parse(transactionJson);
 
     // Format tanggal
     const date = new Date(transaction.created_at);
@@ -312,7 +353,10 @@ window.printReceipt = function() {
         `;
     });
 
-    // Generate HTML untuk print
+    // Deteksi device
+    const isMobile = isMobileDevice();
+
+    // Generate HTML untuk print/PDF
     const printHTML = `
 <!DOCTYPE html>
 <html>
@@ -436,7 +480,6 @@ window.printReceipt = function() {
 </head>
 <body>
 
-<!-- Header -->
 <div class="header">
     <h1>Dupa Radha Kresna</h1>
     <p>Jl. Manggis II, Bjr Candi Baru Gianyar, Bali</p>
@@ -445,7 +488,6 @@ window.printReceipt = function() {
 
 <div class="divider"></div>
 
-<!-- Info Transaksi -->
 <div class="info">
     <table>
         <tr>
@@ -465,12 +507,10 @@ window.printReceipt = function() {
 
 <div class="divider"></div>
 
-<!-- Items -->
 <div class="items">
     ${itemsHTML}
 </div>
 
-<!-- Total -->
 <div class="total-section">
     <table>
         <tr>
@@ -480,25 +520,61 @@ window.printReceipt = function() {
     </table>
 </div>
 
-<!-- Footer -->
 <div class="footer">
     <p>Terima kasih atas</p>
     <p>kunjungan Anda!</p>
 </div>
 
+${isMobile ? `
+<script>
+    // Auto trigger print dialog untuk save as PDF di mobile
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            window.print();
+        }, 100);
+    });
+<\/script>
+` : ''}
+
 </body>
 </html>
     `;
 
-    // Buka window print
-    const printWindow = window.open('', '', 'width=200,height=600');
-    printWindow.document.write(printHTML);
-    printWindow.document.close();
-    
-    setTimeout(() => {
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
-    }, 300);
+    if (isMobile) {
+        // Mobile: Buka di window baru dengan instruksi save as PDF
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+            printWindow.document.write(printHTML);
+            printWindow.document.close();
+            
+            // Tidak auto-close untuk memberi waktu user save PDF
+            setTimeout(() => {
+                printWindow.focus();
+            }, 100);
+        } else {
+            alert('Mohon izinkan popup untuk menyimpan PDF');
+        }
+    } else {
+        // Desktop: Print normal
+        const printWindow = window.open('', '', 'width=200,height=600');
+        printWindow.document.write(printHTML);
+        printWindow.document.close();
+        
+        setTimeout(() => {
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }, 300);
+    }
 };
+
+// Update button text saat halaman load
+document.addEventListener('DOMContentLoaded', function() {
+    updatePrintButtonText();
+});
+
+// Update button text saat resize (untuk responsive)
+window.addEventListener('resize', function() {
+    updatePrintButtonText();
+});
 </script>

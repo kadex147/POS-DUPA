@@ -273,8 +273,9 @@
             <p>Telp: 0821 4510 7268</p>
         </div>
         <div class="header-right">
-            <h2>Laporan Transaksi</h2>
+            <h2>Laporan Transaksi Kasir</h2>
             <p>Dicetak pada: {{ date('d/m/Y H:i') }}</p>
+            <p class="bold">Kasir: {{ $kasirName }}</p>
             <p class="bold">{{ $subLabel }}</p>
             <p class="small">Periode: {{ $dateRangeString }}</p>
         </div>
@@ -283,7 +284,7 @@
     <!-- Ringkasan Stats -->
     <div class="stats-grid">
         <div class="stat-item">
-            <p class="stat-label">Total Pendapatan</p>
+            <p class="stat-label">Total Pemasukan</p>
             <p class="stat-value">Rp {{ number_format($totalIncome, 0, ',', '.') }}</p>
         </div>
         <div class="stat-item">
@@ -336,7 +337,7 @@
     <div class="footer-section">
         <div class="signature-box">
             <p class="label">Mengetahui,</p>
-            <p class="name">Manager Toko</p>
+            <p class="name">{{ $kasirName }}</p>
         </div>
     </div>
 

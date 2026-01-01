@@ -35,7 +35,6 @@
         }
         
         .login-image {
-            opacity: 0.8;
             object-fit: cover;
             width: 100%;
             height: 100%;
