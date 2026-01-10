@@ -9,9 +9,18 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')->paginate(10);
+        $query = Product::with('category');
+        
+        // Fitur Pencarian
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = $request->search;
+            $query->where('name', 'LIKE', '%' . $searchTerm . '%');
+        }
+        
+        $products = $query->orderBy('created_at', 'desc')->paginate(10);
+        
         return view('products.index', compact('products'));
     }
 
@@ -28,6 +37,7 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -53,11 +63,12 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
-            // Delete old image if exists
+            // Hapus gambar lama jika ada
             if ($product->image) {
                 Storage::disk('public')->delete($product->image);
             }
@@ -71,31 +82,28 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        // Delete image if exists
+        // Hapus gambar jika ada
         if ($product->image) {
             Storage::disk('public')->delete($product->image);
         }
-        
+
         $product->delete();
+
         return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus');
     }
 
-    /**
-     * Update stock via AJAX
-     */
     public function updateStock(Request $request, Product $product)
     {
         $validated = $request->validate([
             'stock' => 'required|integer|min:0',
         ]);
 
-        $product->stock = $validated['stock'];
-        $product->save();
+        $product->update(['stock' => $validated['stock']]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Stock berhasil diupdate',
-            'stock' => $product->stock
+            'stock' => $product->stock,
+            'message' => 'Stock berhasil diupdate'
         ]);
     }
 }

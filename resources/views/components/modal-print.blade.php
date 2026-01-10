@@ -135,41 +135,78 @@
 
 <script>
 /**
- * Deteksi apakah device adalah mobile
+ * Deteksi apakah device adalah mobile atau tablet
  */
 function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-           window.innerWidth <= 768;
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    
+    // Debug logging
+    console.log('=== MOBILE DETECTION ===');
+    console.log('User Agent:', userAgent);
+    console.log('Screen Width:', window.innerWidth);
+    console.log('maxTouchPoints:', navigator.maxTouchPoints);
+    
+    // 1. Deteksi Android
+    if (/Android/i.test(userAgent)) {
+        console.log('✅ Detected: Android device');
+        return true;
+    }
+    
+    // 2. Deteksi iOS
+    if (/iPhone|iPad|iPod/i.test(userAgent)) {
+        console.log('✅ Detected: iOS device');
+        return true;
+    }
+    
+    // 3. Deteksi iPad modern
+    if (userAgent.match(/Mac/) && navigator.maxTouchPoints && navigator.maxTouchPoints > 2) {
+        console.log('✅ Detected: iPad (modern)');
+        return true;
+    }
+    
+    // 4. Deteksi generic mobile
+    if (/Mobile|Tablet|webOS|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
+        console.log('✅ Detected: Generic mobile');
+        return true;
+    }
+    
+    // 5. Deteksi touch device
+    if (navigator.maxTouchPoints > 0 && window.innerWidth <= 1280) {
+        console.log('✅ Detected: Touch device');
+        return true;
+    }
+    
+    console.log('❌ Not detected as mobile/tablet');
+    return false;
 }
 
 /**
- * Update text tombol cetak berdasarkan device
+ * Update text tombol cetak
  */
 function updatePrintButtonText() {
     const isMobile = isMobileDevice();
     const buttonText = isMobile ? 'Simpan sebagai PDF' : 'Cetak Struk';
     
-    // Update semua tombol cetak
-    document.querySelectorAll('.button-text').forEach(span => {
+    console.log('Button text:', buttonText);
+    
+    document.querySelectorAll('.button-text').forEach((span, index) => {
         span.textContent = buttonText;
+        console.log(`Button ${index + 1} updated to:`, span.textContent);
     });
 }
 
 /**
- * Menampilkan modal transaksi berhasil (setelah checkout)
+ * Menampilkan modal transaksi berhasil
  */
 window.showPostTransactionModal = function(transactionData) {
-    // 1. Simpan data transaksi ke atribut DOM modal (menghindari variabel global)
     const modal = document.getElementById('postTransactionDetailModal');
     modal.setAttribute('data-transaction', JSON.stringify(transactionData));
     
-    // Format data
     const formattedDate = new Date(transactionData.created_at).toLocaleString('id-ID', {
         day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
     });
     const formattedTotal = 'Rp ' + parseFloat(transactionData.total).toLocaleString('id-ID');
 
-    // Isi modal
     document.getElementById('postDetailModalInvoice').textContent = transactionData.invoice_number;
     document.getElementById('postDetailModalTanggal').textContent = formattedDate;
     document.getElementById('postDetailModalKasir').textContent = transactionData.user.username;
@@ -190,44 +227,28 @@ window.showPostTransactionModal = function(transactionData) {
         itemsBody.innerHTML += row;
     });
 
-    // Update text tombol berdasarkan device
     updatePrintButtonText();
-
-    // Tampilkan modal
     modal.classList.remove('hidden');
     modal.classList.add('flex');
 };
 
-/**
- * Menutup modal transaksi berhasil
- */
 window.closePostTransactionModal = function() {
     const modal = document.getElementById('postTransactionDetailModal');
-    
-    // Bersihkan data dan sembunyikan modal
     modal.removeAttribute('data-transaction');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
-    
-    // Reload halaman setelah modal ditutup untuk update stock
     window.location.reload();
 };
 
-/**
- * Membuka modal print (dari history/dashboard)
- */
 window.openPrintModal = function(transactionData) {
-    // 1. Simpan data transaksi ke atribut DOM modal
     const modal = document.getElementById('transactionPrintModal');
     modal.setAttribute('data-transaction', JSON.stringify(transactionData));
     
-    // Format data
     const formattedDate = new Date(transactionData.created_at).toLocaleString('id-ID', {
         day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
     });
     const formattedTotal = 'Rp ' + parseFloat(transactionData.total).toLocaleString('id-ID');
 
-    // Isi modal
     document.getElementById('printModalInvoice').textContent = transactionData.invoice_number;
     document.getElementById('printModalTanggal').textContent = formattedDate;
     document.getElementById('printModalKasir').textContent = transactionData.user.username;
@@ -248,56 +269,37 @@ window.openPrintModal = function(transactionData) {
         itemsBody.innerHTML += row;
     });
 
-    // Update text tombol berdasarkan device
     updatePrintButtonText();
-
-    // Tampilkan modal
     modal.classList.remove('hidden');
     modal.classList.add('flex');
 };
 
-/**
- * Menutup modal print
- */
 window.closePrintModal = function() {
     const modal = document.getElementById('transactionPrintModal');
-    
-    // Bersihkan data dan sembunyikan
     modal.removeAttribute('data-transaction');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
 };
 
-/**
- * Cetak struk dan tutup modal (untuk post-transaction)
- */
 window.printReceiptAndClose = function() {
     printReceipt();
-    // Tutup modal setelah print (sama seperti tombol tutup)
     setTimeout(() => {
-        closePostTransactionModal(); // Akan menutup modal dan reload halaman
+        closePostTransactionModal();
     }, 500);
 };
 
-/**
- * Cetak struk dan tutup modal (untuk history)
- */
 window.printReceiptAndCloseHistory = function() {
     printReceipt();
-    // Tutup modal setelah print
     setTimeout(() => {
         closePrintModal();
     }, 500);
 };
 
 /**
- * Mencetak struk thermal 58mm (universal function)
- * Mengambil data dari modal yang sedang aktif (visible)
- * Untuk mobile: Save as PDF
- * Untuk desktop: Print
+ * Cetak struk - BEHAVIOR SAMA untuk mobile dan desktop
+ * Auto print & auto close
  */
 window.printReceipt = function() {
-    // Cari modal mana yang sedang aktif (tidak hidden)
     const postModal = document.getElementById('postTransactionDetailModal');
     const historyModal = document.getElementById('transactionPrintModal');
     let activeModal = null;
@@ -309,29 +311,20 @@ window.printReceipt = function() {
     }
 
     if (!activeModal) {
-        alert('Modal transaksi tidak ditemukan atau tertutup.');
+        alert('Modal transaksi tidak ditemukan.');
         return;
     }
 
-    // Ambil data dari atribut 'data-transaction'
     const transactionJson = activeModal.getAttribute('data-transaction');
     if (!transactionJson) {
-        alert('Data transaksi tidak tersedia pada modal.');
+        alert('Data transaksi tidak tersedia.');
         return;
     }
 
     const transaction = JSON.parse(transactionJson);
-
-    // Format tanggal
     const date = new Date(transaction.created_at);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const formattedDate = `${day}/${month}/${year}, ${hours}:${minutes}`;
+    const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}, ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 
-    // Generate items HTML
     let itemsHTML = '';
     transaction.items.forEach(item => {
         const itemName = item.product.name;
@@ -353,10 +346,8 @@ window.printReceipt = function() {
         `;
     });
 
-    // Deteksi device
     const isMobile = isMobileDevice();
 
-    // Generate HTML untuk print/PDF
     const printHTML = `
 <!DOCTYPE html>
 <html>
@@ -365,17 +356,8 @@ window.printReceipt = function() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Struk - ${transaction.invoice_number}</title>
     <style>
-        @page {
-            margin: 0;
-            size: 58mm auto;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        @page { margin: 0; size: 58mm auto; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Courier New', monospace;
             font-size: 11px;
@@ -386,194 +368,87 @@ window.printReceipt = function() {
             color: #000;
             line-height: 1.2;
         }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 5px;
-            padding-bottom: 5px;
-            border-bottom: 1px dashed #000;
-        }
-        
-        .header h1 {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 2px;
-        }
-        
-        .header p {
-            font-size: 10px;
-            margin: 1px 0;
-        }
-        
-        .divider {
-            border-top: 1px dashed #000;
-            margin: 5px 0;
-        }
-        
-        .info {
-            font-size: 10px;
-            margin: 5px 0;
-        }
-        
-        .info table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .info td {
-            padding: 1px 0;
-        }
-        
-        .info td:first-child {
-            width: 30%;
-        }
-        
-        .info td:last-child {
-            width: 70%;
-            text-align: right;
-        }
-        
-        .items {
-            margin: 5px 0;
-        }
-        
-        .items table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .items td {
-            padding: 0;
-        }
-        
-        .total-section {
-            border-top: 1px dashed #000;
-            padding-top: 5px;
-            margin-top: 5px;
-        }
-        
-        .total-section table {
-            width: 100%;
-            font-size: 13px;
-        }
-        
-        .total-section td {
-            padding: 2px 0;
-        }
-        
-        .footer {
-            text-align: center;
-            margin-top: 8px;
-            padding-top: 5px;
-            border-top: 1px dashed #000;
-            font-size: 10px;
-            line-height: 1.3;
-        }
-        
-        @media print {
-            body {
-                margin: 0;
-                padding: 3mm;
-            }
-        }
+        .header { text-align: center; margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px dashed #000; }
+        .header h1 { font-size: 14px; font-weight: bold; margin-bottom: 2px; }
+        .header p { font-size: 10px; margin: 1px 0; }
+        .divider { border-top: 1px dashed #000; margin: 5px 0; }
+        .info { font-size: 10px; margin: 5px 0; }
+        .info table { width: 100%; border-collapse: collapse; }
+        .info td { padding: 1px 0; }
+        .info td:first-child { width: 30%; }
+        .info td:last-child { width: 70%; text-align: right; }
+        .items { margin: 5px 0; }
+        .items table { width: 100%; border-collapse: collapse; }
+        .items td { padding: 0; }
+        .total-section { border-top: 1px dashed #000; padding-top: 5px; margin-top: 5px; }
+        .total-section table { width: 100%; font-size: 13px; }
+        .total-section td { padding: 2px 0; }
+        .footer { text-align: center; margin-top: 8px; padding-top: 5px; border-top: 1px dashed #000; font-size: 10px; line-height: 1.3; }
+        @media print { body { margin: 0; padding: 3mm; } }
     </style>
 </head>
 <body>
-
 <div class="header">
     <h1>Dupa Radha Kresna</h1>
     <p>Jl. Manggis II, Bjr Candi Baru Gianyar, Bali</p>
     <p>Telp: 0821 4510 7268</p>
 </div>
-
 <div class="divider"></div>
-
 <div class="info">
     <table>
-        <tr>
-            <td>Invoice:</td>
-            <td>${transaction.invoice_number}</td>
-        </tr>
-        <tr>
-            <td>Tanggal:</td>
-            <td>${formattedDate}</td>
-        </tr>
-        <tr>
-            <td>Kasir:</td>
-            <td>${transaction.user.username}</td>
-        </tr>
+        <tr><td>Invoice:</td><td>${transaction.invoice_number}</td></tr>
+        <tr><td>Tanggal:</td><td>${formattedDate}</td></tr>
+        <tr><td>Kasir:</td><td>${transaction.user.username}</td></tr>
     </table>
 </div>
-
 <div class="divider"></div>
-
-<div class="items">
-    ${itemsHTML}
-</div>
-
+<div class="items">${itemsHTML}</div>
 <div class="total-section">
     <table>
-        <tr>
-            <td>TOTAL:</td>
-            <td align="right">Rp ${parseFloat(transaction.total).toLocaleString('id-ID')}</td>
-        </tr>
+        <tr><td>TOTAL:</td><td align="right">Rp ${parseFloat(transaction.total).toLocaleString('id-ID')}</td></tr>
     </table>
 </div>
-
 <div class="footer">
     <p>Terima kasih atas</p>
     <p>kunjungan Anda!</p>
 </div>
-
-${isMobile ? `
 <script>
-    // Auto trigger print dialog untuk save as PDF di mobile
     window.addEventListener('load', function() {
         setTimeout(function() {
             window.print();
-        }, 100);
+            window.addEventListener('afterprint', function() {
+                setTimeout(function() { window.close(); }, 500);
+            });
+            setTimeout(function() {
+                if (!window.closed) { window.close(); }
+            }, 3000);
+        }, 500);
     });
 <\/script>
-` : ''}
-
 </body>
 </html>
     `;
 
+    // SAMA untuk mobile dan desktop: Auto print & auto close
     if (isMobile) {
-        // Mobile: Buka di window baru dengan instruksi save as PDF
         const printWindow = window.open('', '_blank');
         if (printWindow) {
             printWindow.document.write(printHTML);
             printWindow.document.close();
-            
-            // Tidak auto-close untuk memberi waktu user save PDF
-            setTimeout(() => {
-                printWindow.focus();
-            }, 100);
         } else {
-            alert('Mohon izinkan popup untuk menyimpan PDF');
+            alert('Mohon izinkan popup untuk mencetak struk');
         }
     } else {
-        // Desktop: Print normal
         const printWindow = window.open('', '', 'width=200,height=600');
         printWindow.document.write(printHTML);
         printWindow.document.close();
-        
-        setTimeout(() => {
-            printWindow.focus();
-            printWindow.print();
-            printWindow.close();
-        }, 300);
     }
 };
 
-// Update button text saat halaman load
 document.addEventListener('DOMContentLoaded', function() {
     updatePrintButtonText();
 });
 
-// Update button text saat resize (untuk responsive)
 window.addEventListener('resize', function() {
     updatePrintButtonText();
 });

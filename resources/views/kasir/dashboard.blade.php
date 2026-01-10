@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-6">
     <!-- Header Info Kasir dengan Tombol Cetak -->
-    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
+    <div class="bg-linear-to-r from-blue-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
                 <h2 class="text-2xl font-bold mb-2">Selamat Datang, {{ auth()->user()->name }}!</h2>

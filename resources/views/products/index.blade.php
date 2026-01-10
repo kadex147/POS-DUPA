@@ -3,19 +3,37 @@
 @section('title', 'Data Produk - Point of Sale')
 
 @section('content')
-<div class="space-y-4 lg:space-y-6">
-    <!-- Header Section -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+<div class="flex flex-col gap-4 mb-6">
         <h1 class="text-xl lg:text-2xl font-bold text-gray-800">List Produk</h1>
-        <a href="{{ route('products.create') }}" 
-           class="btn-soft w-full sm:w-auto px-6 py-2.5 bg-linear-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 text-center text-sm lg:text-base font-semibold shadow-lg">
-            <span class="flex items-center justify-center gap-2">
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            
+           <form action="{{ route('products.index') }}" method="GET" class="w-full sm:max-w-md">
+                <div class="relative w-full text-gray-500">
+                    
+                    <div class="absolute top-1/2 left-4 transform -translate-y-1/2 pointer-events-none z-10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+
+                    <input type="text" 
+                           name="search" 
+                           value="{{ request('search') }}"
+                           placeholder="Cari nama produk..." 
+                           class="input-soft w-full pl-12 pr-4 py-2.5 bg-white border-gray-200 focus:border-blue-500 rounded-xl transition-all shadow-sm outline-none relative z-0">
+                </div>
+            </form>
+
+            <a href="{{ route('products.create') }}" 
+               class="btn-soft w-full sm:w-auto px-6 py-2.5 bg-linear-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 text-center text-sm lg:text-base font-semibold shadow-lg shrink-0 flex items-center justify-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                Tambah Produk
-            </span>
-        </a>
+                <span>Tambah Produk</span>
+            </a>
+            
+        </div>
     </div>
 
     <!-- Success Message -->

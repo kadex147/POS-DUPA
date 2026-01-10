@@ -160,8 +160,8 @@
         
         <!-- Title & Description -->
         <h3 class="text-xl font-bold text-center text-gray-800 mb-2">Hapus Kategori?</h3>
-        <p class="text-center text-gray-600 text-sm mb-1">Anda yakin ingin menghapus kategori:</p>
-        <p class="text-center font-bold text-gray-800 mb-6" id="categoryName"></p>
+        <p class="text-center font-bold text-gray-800 mb-2" id="categoryName"></p>
+        <p class="text-center text-gray-600 text-sm mb-6">Menghapus kategori ini akan menyebabkan produk yang menggunakan kategori ini akan terhapus juga!</p>
         
         <!-- Action Buttons -->
         <div class="flex gap-3">
